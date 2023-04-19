@@ -3,7 +3,7 @@ services:
  configdb:
     image: postgres:15.2
     restart: always
-    user: postgres
+    user: drioadm
     secrets:
       - configdb-password
     volumes:
