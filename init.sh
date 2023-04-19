@@ -13,3 +13,7 @@ function ctrl-start-fg() {
 function ctrl-stop() {
     docker compose -f ${MANIFEST} down
 }
+
+function ctrl-stop-clean() {
+    docker compose -f ${MANIFEST} down -v
+}

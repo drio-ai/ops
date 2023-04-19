@@ -1,0 +1,6 @@
+FROM postgres:15.2 AS driodb
+
+LABEL maintainer="Sudarsan Raghavan <sraghavan@drio.ai>"
+
+RUN mkdir -p /docker-entrypoint-initdb.d
+COPY dbinit /docker-entrypoint-initdb.d/
