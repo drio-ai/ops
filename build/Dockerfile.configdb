@@ -6,3 +6,5 @@ LABEL component="Drio Controller"
 
 RUN mkdir -p /docker-entrypoint-initdb.d
 COPY dbinit /docker-entrypoint-initdb.d/
+RUN mkdir -p /drio-cleanupdb.d
+COPY dbclean /drio-cleanupdb.d/
