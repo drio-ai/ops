@@ -1,2 +1,0 @@
-CREATE DATABASE accounts;
-CREATE DATABASE config;
