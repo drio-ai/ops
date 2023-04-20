@@ -5,4 +5,4 @@ LABEL company="Drio Inc"
 LABEL component="Drio Controller"
 
 COPY redis/redis.conf /usr/local/etc/redis/redis.conf
-CMD [ "redis-server", "/usr/local/etc/redis/redis.conf" ]
+CMD [ "redis-server", "/usr/local/etc/redis/redis.conf", "--save", "60", "1", "--loglevel", "warning" ]
