@@ -19,9 +19,17 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+ redis:
+    image: drioinc/redis:1.0
+    restart: always
+    volumes:
+      - redis-data:/var/lib/redis/data
+    expose:
+      - 6379
 
 volumes:
   configdb-data:
+  redis-data:
 
 secrets:
   configdb-password:
