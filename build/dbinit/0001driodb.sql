@@ -5,7 +5,6 @@ create database drio;
 create schema accounts;
 
 \set maxnamelen 256
-\set idlen      64
 
 create or replace function accounts.trigger_update_timestamp() returns trigger as $update_ts$
     begin
@@ -23,7 +22,7 @@ create table if not exists accounts.accounts (
     id               uuid default gen_random_uuid() primary key,
     name             varchar(:maxnamelen) not null check (length(name) >= 1),
     created_at       timestamptz not null default now(),
-    updated_at       timestamptz not null default now()       
+    updated_at       timestamptz not null default now()
 );
 
 create table if not exists accounts.ou (
