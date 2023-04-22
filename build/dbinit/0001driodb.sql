@@ -11,12 +11,12 @@ create schema accounts;
 \set maxurllen       1024
 \set maxiplen        64
 
-create or replace function accounts.trigger_update_timestamp() returns trigger as $update_ts$
+create or replace function accounts.trigger_update_timestamp() returns trigger as $update_accounts_ts$
     begin
         NEW.updated_at = now();
         return NEW;
     end;
-$update_ts$ language plpgsql;
+$update_accounts_ts$ language plpgsql;
 
 create table if not exists accounts.accounts (
     id               uuid default gen_random_uuid() primary key,
@@ -90,12 +90,12 @@ create table if not exists accounts.user_associations (
 
 create schema ddx;
 
-create or replace function ddx.trigger_update_timestamp() returns trigger as $update_ts$
+create or replace function ddx.trigger_update_timestamp() returns trigger as $update_ddx_ts$
     begin
         NEW.updated_at = now();
         return NEW;
     end;
-$update_ts$ language plpgsql;
+$update_ddx_ts$ language plpgsql;
 
 create table if not exists ddx.clusters (
     id               uuid default gen_random_uuid() primary key,
@@ -136,3 +136,10 @@ create table if not exists ddx.instances (
 );
 
 create schema config;
+
+create or replace function config.trigger_update_timestamp() returns trigger as $update_schema_ts$
+    begin
+        NEW.updated_at = now();
+        return NEW;
+    end;
+$update_schema_ts$ language plpgsql;
