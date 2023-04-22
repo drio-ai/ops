@@ -2,6 +2,7 @@ version: "3.9"
 services:
  configdb:
     image: ${CONFIGDB_IMAGE}:${CONFIGDB_VERSION}
+    container_name: postgres
     restart: always
     user: postgres
     secrets:
@@ -20,6 +21,7 @@ services:
       retries: 5
  redis:
     image: ${REDIS_IMAGE}:${REDIS_VERSION}
+    container_name: redis
     restart: always
     volumes:
       - redis-data:/var/lib/redis/data
