@@ -136,13 +136,3 @@ create table if not exists ddx.instances (
 );
 
 create schema config;
-
-create table if not exists config.datasource (
-    id int primary key,
-    name varchar
-);
-
-create table if not exists config.ddx (
-    id int primary key,
-    name varchar
-);
