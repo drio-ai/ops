@@ -6,7 +6,9 @@ endif
 
 TAG = $(VER)
 REPO = drioinc
+
 DOCKER_BUILD_CMD = docker build --no-cache
+
 CONFIGDB_IMGNAME = postgres
 REDIS_IMGNAME = redis
 

@@ -1,19 +1,20 @@
 #!/bin/bash
 
-MANIFEST=./docker-compose.yml
+MANIFEST="./controller.yml"
+ENVFILE="./controller.env"
 
 function ctrl-start() {
-    docker compose -f ${MANIFEST} up --detach
+    docker compose --env-file ${ENVFILE} --file ${MANIFEST} up --detach
 }
 
 function ctrl-start-fg() {
-    docker compose -f ${MANIFEST} up
+    docker compose --env-file ${ENVFILE} --file ${MANIFEST} up
 }
 
 function ctrl-stop() {
-    docker compose -f ${MANIFEST} down
+    docker compose --env-file ${ENVFILE} --file ${MANIFEST} down
 }
 
 function ctrl-stop-clean() {
-    docker compose -f ${MANIFEST} down -v
+    docker compose --env-file ${ENVFILE} --file ${MANIFEST} down -v
 }
