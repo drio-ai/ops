@@ -1,28 +1,25 @@
 .PHONY: all clean configdb configdb-clean redis redis-clean
 
-ifeq ($(strip $(VER)),)
-    VER = 0.1
-endif
-
-TAG = $(VER)
-REPO = drioinc
-
 DOCKER_BUILD_CMD = docker build --no-cache
 
-CONFIGDB_IMGNAME = postgres
-REDIS_IMGNAME = redis
+ifeq ($(MAKECMDGOALS),all)
+include ../controller.env
+endif
+ifeq ($(MAKECMDGOALS),clean)
+include ../controller.env
+endif
 
 configdb:
-	$(DOCKER_BUILD_CMD) -f ./Dockerfile.configdb -t $(REPO)/$(CONFIGDB_IMGNAME):$(VER) .	
+	$(DOCKER_BUILD_CMD) -f ./Dockerfile.configdb -t $(CONFIGDB_IMAGE):$(CONFIGDB_VERSION) .
 
 configdb-clean:
-	docker rmi $(REPO)/$(CONFIGDB_IMGNAME):$(VER)
+	docker rmi $(CONFIGDB_IMAGE):$(CONFIGDB_VERSION)
 
 redis:
-	$(DOCKER_BUILD_CMD) -f ./Dockerfile.redis -t $(REPO)/$(REDIS_IMGNAME):$(VER) .
+	$(DOCKER_BUILD_CMD) -f ./Dockerfile.redis -t $(REDIS_IMAGE):$(REDIS_VERSION) .
 
 redis-clean:
-	docker rmi $(REPO)/$(REDIS_IMGNAME):$(VER)
+	docker rmi $(REDIS_IMAGE):$(REDIS_VERSION)
 
 all: configdb redis
 clean: configdb-clean redis-clean

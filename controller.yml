@@ -1,7 +1,7 @@
 version: "3.9"
 services:
  configdb:
-    image: drioinc/postgres:${CONFIGDB_VERSION}
+    image: ${CONFIGDB_IMAGE}:${CONFIGDB_VERSION}
     restart: always
     user: postgres
     secrets:
@@ -19,7 +19,7 @@ services:
       timeout: 5s
       retries: 5
  redis:
-    image: drioinc/redis:${REDIS_VERSION}
+    image: ${REDIS_IMAGE}:${REDIS_VERSION}
     restart: always
     volumes:
       - redis-data:/var/lib/redis/data
