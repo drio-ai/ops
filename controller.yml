@@ -31,6 +31,9 @@ services:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
     container_name: apiservice
     restart: always
+    depends_on:
+        - configdb
+        - redis
 
 volumes:
   configdb-data:
