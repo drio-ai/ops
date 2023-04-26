@@ -1,26 +1,45 @@
-.PHONY: build build-clean start start-fg stop stop-clean all clean
+.PHONY: ctrl-build ctrl-build-clean ctrl-start ctrl-start-fg ctrl-stop ctrl-stop-clean vault-start vault-start-fg vault-stop vault-stop-clean all clean
 
-MANIFEST = "./controller.yml"
-ENVFILE = "./controller.env"
-COMPOSE_CMD = docker compose --env-file $(ENVFILE) --file $(MANIFEST)
+CTRL_MANIFEST = "./controller.yml"
+CTRL_ENVFILE = "./controller.env"
+CTRL_COMPOSE_CMD = docker compose --env-file $(CTRL_ENVFILE) --file $(CTRL_MANIFEST)
 
-build:
+ctrl-build:
 	$(MAKE) -C build all
 
-build-clean:
+ctrl-build-clean:
 	$(MAKE) -C build clean
 
-start:
-	$(COMPOSE_CMD) up --detach
+ctrl-start:
+	$(CTRL_COMPOSE_CMD) up --detach
 
-start-fg:
-	$(COMPOSE_CMD) up
+ctrl-start-fg:
+	$(CTRL_COMPOSE_CMD) up
 
-stop:
-	$(COMPOSE_CMD) down
+ctrl-stop:
+	$(CTRL_COMPOSE_CMD) down
 
-stop-clean:
-	$(COMPOSE_CMD) down -v
+ctrl-stop-clean:
+	$(CTRL_COMPOSE_CMD) down -v
 
-all: build start
-clean: stop-clean build-clean
+VAULT_MANIFEST = "./vault.yml"
+VAULT_ENVFILE  = "./vault.env"
+VAULT_COMPOSE_CMD = docker compose --env-file $(VAULT_ENVFILE) --file $(VAULT_MANIFEST)
+
+vault-start:
+	$(VAULT_COMPOSE_CMD) up --detach
+
+vault-start-fg:
+	$(VAULT_COMPOSE_CMD) up
+
+vault-stop:
+	$(VAULT_COMPOSE_CMD) down
+	
+vault-stop-clean:
+	$(VAULT_COMPOSE_CMD) down -v
+	rm -rf vault/data/*
+	rm -rf vault/logs/*
+	
+
+all: vault-start ctrl-build ctrl-start
+clean: ctrl-stop-clean ctrl-build-clean vault-stop-clean
