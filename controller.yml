@@ -8,12 +8,14 @@ services:
     secrets:
       - configdb-password
     volumes:
-      - configdb-data:/var/lib/postgresql/data
+      - ctrl_configdb_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=example
       - POSTGRES_PASSWORD_FILE=/run/secrets/configdb-password
     expose:
       - 5432
+    networks:
+      - ctrl_internal
     healthcheck:
       test: [ "CMD", "pg_isready" ]
       interval: 10s
@@ -24,21 +26,33 @@ services:
     container_name: redis
     restart: always
     volumes:
-      - redis-data:/var/lib/redis/data
+      - ctrl_redis_data:/var/lib/redis/data
     expose:
       - 6379
+    networks:
+      - ctrl_internal
  apisvc:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
     container_name: apiservice
     restart: always
+    networks:
+      - ctrl_internal
     depends_on:
-        - configdb
-        - redis
+      - configdb
+      - redis
 
 volumes:
-  configdb-data:
-  redis-data:
+  ctrl_configdb_data:
+    name: configdb_data
+  ctrl_redis_data:
+    name: redis_data
 
 secrets:
   configdb-password:
     file: configdb/password
+
+networks:
+  ctrl_external:
+    name: extnet
+  ctrl_internal:
+    name: intnet
