@@ -21,6 +21,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
  redis:
     image: ${REDIS_IMAGE}:${REDIS_VERSION}
     container_name: redis
@@ -31,6 +32,7 @@ services:
       - 6379
     networks:
       - ctrl_internal
+
  apisvc:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
     container_name: apiservice
@@ -38,6 +40,9 @@ services:
     networks:
       - ctrl_internal
     depends_on:
+      - configdb
+      - redis
+    links:
       - configdb
       - redis
 
