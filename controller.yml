@@ -16,6 +16,7 @@ services:
       - 5432
     networks:
       - ctrl_internal
+      - ctrl_vaultnet
     healthcheck:
       test: [ "CMD", "pg_isready" ]
       interval: 10s
@@ -39,6 +40,7 @@ services:
     restart: always
     networks:
       - ctrl_internal
+      - ctrl_vaultnet
     depends_on:
       - configdb
       - redis
@@ -61,3 +63,6 @@ networks:
     name: extnet
   ctrl_internal:
     name: intnet
+  ctrl_vaultnet:
+    name: vaultnet
+    external: true
