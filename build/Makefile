@@ -29,5 +29,5 @@ vault:
 vault-clean:
 	docker rmi $(VAULT_IMAGE):$(VAULT_VERSION)
 
-all: configdb redis vault
-clean: configdb-clean redis-clean vault-clean
+all: configdb redis
+clean: configdb-clean redis-clean
