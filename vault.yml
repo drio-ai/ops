@@ -18,7 +18,7 @@ services:
       - VAULT_API_ADDR=http://0.0.0.0:8200
       - VAULT_SECRET_SHARES=${VAULT_SECRET_SHARES}
       - VAULT_SECRET_THRESHOLD=${VAULT_SECRET_THRESHOLD}
-    command: /start-vault.sh
+    command: vault server -config=/vault/config/config.json
     cap_add:
       - IPC_LOCK
     networks:
