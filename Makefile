@@ -39,6 +39,8 @@ vault-stop-clean:
 	$(VAULT_COMPOSE_CMD) down -v
 	rm -rf vault/data/*
 	rm -rf vault/logs/*
+	rm -rf vault/tokens/drio-controller/*
+	rm -rf vault/tokens/root/*
 	
 
 all: ctrl-build ctrl-start
