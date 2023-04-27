@@ -1,13 +1,18 @@
-.PHONY: all clean configdb configdb-clean redis redis-clean vault vault-clean
+.PHONY: all clean configdb configdb-clean redis redis-clean vault vault-clean vault-all vault-clean-all
 
 DOCKER_BUILD_CMD = docker build --no-cache
 
 ifeq ($(MAKECMDGOALS),all)
 include ../controller.env
-include ../vault.env
 endif
 ifeq ($(MAKECMDGOALS),clean)
 include ../controller.env
+endif
+
+ifeq ($(MAKECMDGOALS),vault-all)
+include ../vault.env
+endif
+ifeq ($(MAKECMDGOALS),vault-clean-all)
 include ../vault.env
 endif
 
@@ -31,3 +36,6 @@ vault-clean:
 
 all: configdb redis
 clean: configdb-clean redis-clean
+
+vault-all: vault
+vault-clean-all: vault-clean

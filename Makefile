@@ -22,9 +22,18 @@ ctrl-stop:
 ctrl-stop-clean:
 	$(CTRL_COMPOSE_CMD) down -v
 
+all: ctrl-build ctrl-start
+clean: ctrl-stop-clean ctrl-build-clean
+
 VAULT_MANIFEST = "./vault.yml"
 VAULT_ENVFILE  = "./vault.env"
 VAULT_COMPOSE_CMD = docker compose --env-file $(VAULT_ENVFILE) --file $(VAULT_MANIFEST)
+
+vault-build:
+	$(MAKE) -C build vault-all
+
+vault-build-clean:
+	$(MAKE) -C build vault-clean-all
 
 vault-start:
 	$(VAULT_COMPOSE_CMD) up --detach
@@ -41,7 +50,3 @@ vault-stop-clean:
 	rm -rf vault/logs/*
 	rm -rf vault/tokens/drio-controller/*
 	rm -rf vault/tokens/root/*
-	
-
-all: ctrl-build ctrl-start
-clean: ctrl-stop-clean ctrl-build-clean

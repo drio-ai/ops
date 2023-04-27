@@ -54,5 +54,5 @@ echo "Extracting approle secret id for drio-controller-role"
 approle_secret_id_info=$(curl --header "X-Vault-Token: ${VAULT_TOKEN}"  --request POST http://127.0.0.1:8200/v1/auth/approle/role/drio-controller-role/secret-id)
 approle_secret_id=$(echo ${approle_secret_id_info} | jq -r ".data .secret_id")
 
-echo "role_id: ${approle_id}" >${VAULT_TOKENS}/drio-controller/drio-controller-role.ids
-echo "secret_id: ${approle_secret_id}" >>${VAULT_TOKENS}/drio-controller/drio-controller-role.ids
+echo "VAULT_ROLE_ID=${approle_id}" >${VAULT_TOKENS}/drio-controller/drio-controller-role.env
+echo "VAULT_SECRET_ID=${approle_secret_id}" >>${VAULT_TOKENS}/drio-controller/drio-controller-role.env
