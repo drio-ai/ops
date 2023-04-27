@@ -1,0 +1,7 @@
+{
+  "path": {
+      "drio-controller/*": {
+          "capabilities": ["read"]
+        }
+    }
+}

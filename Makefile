@@ -41,5 +41,5 @@ vault-stop-clean:
 	rm -rf vault/logs/*
 	
 
-all: vault-start ctrl-build ctrl-start
-clean: ctrl-stop-clean ctrl-build-clean vault-stop-clean
+all: ctrl-build ctrl-start
+clean: ctrl-stop-clean ctrl-build-clean
