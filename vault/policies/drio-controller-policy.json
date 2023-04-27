@@ -1,7 +1,11 @@
 {
   "path": {
-      "drio-controller/*": {
-          "capabilities": ["read"]
-        }
+    "drio-controller/data/postgres": {
+      "capabilities": ["read"]
+    },
+
+    "drio-controller/data/*": {
+        "capabilities": ["create", "update", "read", "delete", "patch", "list"]
     }
+  }
 }
