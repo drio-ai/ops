@@ -56,8 +56,3 @@ approle_secret_id=$(echo ${approle_secret_id_info} | jq -r ".data .secret_id")
 
 echo "role_id: ${approle_id}" >${VAULT_TOKENS}/drio-controller/drio-controller-role.ids
 echo "secret_id: ${approle_secret_id}" >>${VAULT_TOKENS}/drio-controller/drio-controller-role.ids
-
-echo "Extracting token for drio-controller-role"
-approle_client_token_info=$(curl --request POST --data "{\"role_id\": \"${approle_id}\", \"secret_id\": \"${approle_secret_id}\"}" http://127.0.0.1:8200/v1/auth/approle/login)
-approle_client_token=$(echo ${approle_client_token_info} | jq -r ".auth .client_token")
-echo ${approle_client_token} >${VAULT_TOKENS}/drio-controller/drio-controller-role.token
