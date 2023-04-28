@@ -1,10 +1,18 @@
 {
   "path": {
-    "drio-controller/data/postgres": {
+    "drio-controller/ops/data/postgres": {
       "capabilities": ["read"]
     },
 
-    "drio-controller/data/*": {
+    "drio-controller/ops/data/admin": {
+      "capabilities": ["read"]
+    },
+
+    "drio-controller/auth/data/*": {
+        "capabilities": ["create", "update", "read", "delete", "patch", "list"]
+    },
+
+    "drio-controller/users/data/*": {
         "capabilities": ["create", "update", "read", "delete", "patch", "list"]
     }
   }

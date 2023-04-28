@@ -32,10 +32,15 @@ VAULT_TOKEN=$(echo $init_output | jq -r ".root_token")
 export VAULT_TOKEN
 
 echo "Enabling secrets"
-vault secrets enable -version=2 -path=drio-controller kv
+vault secrets enable -version=2 -path=drio-controller/ops kv
+vault secrets enable -version=2 -path=drio-controller/auth kv
+vault secrets enable -version=2 -path=drio-controller/users kv
 
-echo "Setting password"
-vault kv put drio-controller/postgres password=$(openssl rand -hex 12)
+echo "Setting configdb password"
+vault kv put drio-controller/ops/postgres password=$(openssl rand -hex 12)
+
+echo "Setting controller admin password"
+vault kv put drio-controller/ops/admin password=$(openssl rand -hex 12)
 
 echo "Attaching policy"
 vault policy write drio-controller-policy ${VAULT_POLICIES}/drio-controller-policy.json
@@ -48,11 +53,11 @@ curl --header "X-Vault-Token: ${VAULT_TOKEN}" --request POST --data '{"policies"
 
 echo "Extracting approle role id for drio-controller-role"
 approle_id_info=$(curl --header "X-Vault-Token: ${VAULT_TOKEN}" http://127.0.0.1:8200/v1/auth/approle/role/drio-controller-role/role-id)
-approle_id=$(echo ${approle_id_info} | jq -r ".data .role_id")
+approle_id=$(echo ${approle_id_info} | jq -r ".data.role_id")
 
 echo "Extracting approle secret id for drio-controller-role"
 approle_secret_id_info=$(curl --header "X-Vault-Token: ${VAULT_TOKEN}"  --request POST http://127.0.0.1:8200/v1/auth/approle/role/drio-controller-role/secret-id)
-approle_secret_id=$(echo ${approle_secret_id_info} | jq -r ".data .secret_id")
+approle_secret_id=$(echo ${approle_secret_id_info} | jq -r ".data.secret_id")
 
 echo "VAULT_ROLE_ID=${approle_id}" >${VAULT_TOKENS}/drio-controller/drio-controller-role.env
 echo "VAULT_SECRET_ID=${approle_secret_id}" >>${VAULT_TOKENS}/drio-controller/drio-controller-role.env
