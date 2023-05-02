@@ -33,8 +33,8 @@ export VAULT_TOKEN
 
 echo "Enabling secrets"
 vault secrets enable -version=2 -path=drio-controller/ops kv
-vault secrets enable -version=2 -path=drio-controller/auth kv
 vault secrets enable -version=2 -path=drio-controller/users kv
+vault secrets enable -version=2 -path=drio-controller/ddx kv
 
 echo "Setting configdb password"
 vault kv put drio-controller/ops/postgres password=$(openssl rand -hex 12)
