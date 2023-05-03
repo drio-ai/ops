@@ -6,6 +6,12 @@ LABEL component="Drio Controller"
 
 RUN mkdir -p /docker-entrypoint-initdb.d && \
     apt update -y && \
-    apt upgrade curl jq -y
+    apt upgrade curl jq locales -y && \
+    sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && \
+    locale-gen
+
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 COPY dbinit /docker-entrypoint-initdb.d/
