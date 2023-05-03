@@ -33,7 +33,7 @@ export VAULT_TOKEN
 
 echo "Enabling secrets"
 vault secrets enable -version=2 -path=drio-controller/ops kv
-vault secrets enable -version=2 -path=drio-controller/users kv
+vault secrets enable -version=2 -path=drio-controller/user kv
 vault secrets enable -version=2 -path=drio-controller/ddx kv
 
 echo "Setting configdb password"

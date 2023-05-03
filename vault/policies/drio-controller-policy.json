@@ -8,11 +8,11 @@
       "capabilities": ["read"]
     },
 
-    "drio-controller/users/data/*": {
+    "drio-controller/user/data/*": {
         "capabilities": ["create", "update", "read", "delete", "patch", "list"]
     },
 
-    "drio-controller/users/metadata/*": {
+    "drio-controller/user/metadata/*": {
         "capabilities": ["create", "update", "read", "delete", "patch", "list"]
     },
 
