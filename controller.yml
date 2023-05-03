@@ -40,8 +40,8 @@ services:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
     container_name: apiservice
     restart: always
-    env_file:
-      - ./vault/tokens/drio-controller/drio-controller-role.env
+    volumes:
+      - ./vault/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
     networks:
       - ctrl_internal
       - ctrl_vaultnet
