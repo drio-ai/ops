@@ -42,6 +42,9 @@ vault kv put drio-controller/ops/postgres password=$(openssl rand -hex 12)
 echo "Setting controller admin password"
 vault kv put drio-controller/ops/admin password=$(openssl rand -hex 12)
 
+echo "Setting test password"
+vault kv put drio-controller/ops/testuser password=$(openssl rand -hex 12)
+
 echo "Attaching policy"
 vault policy write drio-controller-policy ${VAULT_POLICIES}/drio-controller-policy.json
 

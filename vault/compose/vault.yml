@@ -7,12 +7,12 @@ services:
     expose:
       - 8200
     volumes:
-      - ./vault/config:/vault/config
-      - ./vault/policies:/vault/policies
-      - ./vault/data:/vault/data
-      - ./vault/logs:/vault/logs
-      - ./vault/tokens/root:/vault/tokens/root
-      - ./vault/tokens/drio-controller:/vault/tokens/drio-controller
+      - ./config:/vault/config
+      - ./policies:/vault/policies
+      - ./data:/vault/data
+      - ./logs:/vault/logs
+      - ./tokens/root:/vault/tokens/root
+      - ./tokens/drio-controller:/vault/tokens/drio-controller
     environment:
       - VAULT_ADDR=http://0.0.0.0:8200
       - VAULT_API_ADDR=http://0.0.0.0:8200
