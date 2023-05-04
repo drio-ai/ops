@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [[ $1 == "start" ]]; then
+    make image && make start
+elif [[ $1 == "stop" ]]; then
+    make stop-clean
+elif [[ $1 == "stop-clean" ]]; then
+    make stop-clean
+    make clean
+fi
