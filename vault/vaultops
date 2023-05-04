@@ -1,7 +1,11 @@
 #!/bin/bash
 
-if [[ $1 == "start" ]]; then
-    make image && make start
+if [ $1 == "build-start" ]; then
+    make image
+fi
+
+if [ $1 == "start" -o $1 == "build-start" ]; then
+    make start
     vault_status=$(docker ps --filter "name=vault" --filter "status=running" | grep -w vault)
     if [[ -z ${vault_status} ]]; then
         echo "Failed to start vault"
@@ -10,9 +14,12 @@ if [[ $1 == "start" ]]; then
 
     sleep 10
     docker exec -ti vault /init-vault.sh
-elif [[ $1 == "stop" ]]; then
+fi
+
+if [ $1 == "stop" -o $1 == "stop-clean" ]; then
     make stop-clean
-elif [[ $1 == "stop-clean" ]]; then
-    make stop-clean
+fi
+
+if [ $1 == "stop-clean" ]; then
     make clean
 fi
