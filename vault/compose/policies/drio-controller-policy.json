@@ -1,10 +1,10 @@
 {
   "path": {
-    "drio-controller/ops/data/postgres": {
+    "drio-controller/ops/data/*": {
       "capabilities": ["read"]
     },
 
-    "drio-controller/ops/data/admin": {
+    "drio-controller/ops/metadata/*": {
       "capabilities": ["read"]
     },
 
