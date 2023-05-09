@@ -23,6 +23,7 @@ services:
       - IPC_LOCK
     networks:
       - vaultnet
+
   vault-init:
     image: ${VAULT_IMAGE}:${VAULT_VERSION}
     container_name: vault-init
