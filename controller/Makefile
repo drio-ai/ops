@@ -1,4 +1,4 @@
-.PHONY: all clean image start-fg start stop stop-clean
+.PHONY: all clean image image-clean start-fg start stop stop-clean
 
 include ../make.vars
 include environment/controller.env
@@ -12,11 +12,12 @@ image:
 	$(DOCKER_BUILD_CMD) -f $(DOCKER_DIR)/Dockerfile.configdb -t $(CONFIGDB_IMAGE):$(CONFIGDB_VERSION) .
 	$(DOCKER_BUILD_CMD) -f $(DOCKER_DIR)/Dockerfile.redis -t $(REDIS_IMAGE):$(REDIS_VERSION) .
 
-clean:
+image-clean:
 	docker rmi $(CONFIGDB_IMAGE):$(CONFIGDB_VERSION)
 	docker rmi $(REDIS_IMAGE):$(REDIS_VERSION)
 
-all: image
+all: image start
+clean: stop-clean image-clean
 
 start-fg:
 	$(CONTROLLER_COMPOSE_CMD) up

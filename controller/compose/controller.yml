@@ -1,6 +1,6 @@
 version: "3.9"
 services:
- configdb:
+  configdb:
     image: ${CONFIGDB_IMAGE}:${CONFIGDB_VERSION}
     container_name: postgres
     restart: always
@@ -12,6 +12,7 @@ services:
     environment:
       - POSTGRES_DB=example
       - POSTGRES_PASSWORD_FILE=/run/secrets/configdb-password
+      - VAULT_ADDR=http://vault:8200
     env_file:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env
     expose:
@@ -25,7 +26,7 @@ services:
       timeout: 5s
       retries: 5
 
- redis:
+  redis:
     image: ${REDIS_IMAGE}:${REDIS_VERSION}
     container_name: redis
     restart: always
@@ -36,7 +37,29 @@ services:
     networks:
       - ctrl_internal
 
- apisvc:
+  redis-init:
+    image: ${REDIS_IMAGE}:${REDIS_VERSION}
+    container_name: redis-init
+    restart: "no"
+    volumes:
+      - ctrl_redis_data:/var/lib/redis/data
+    environment:
+      - VAULT_ADDR=http://vault:8200
+      - REDIS_HOST=redis
+    env_file:
+      - ../../vault/compose/tokens/drio-controller/drio-controller-role.env
+    entrypoint: /init-redis.sh
+    expose:
+      - 6379
+    depends_on:
+      - redis
+    links:
+      - redis
+    networks:
+      - ctrl_internal
+      - ctrl_vaultnet
+
+  apisvc:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
     container_name: apiservice
     restart: always
