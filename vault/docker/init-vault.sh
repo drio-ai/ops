@@ -1,12 +1,20 @@
 #!/bin/sh
 
+# Sleep to make sure vault is fully up and running
+sleep 10
+
 VAULT_CONFIG=/vault/config
 VAULT_TOKENS=/vault/tokens
 VAULT_POLICIES=/vault/policies
 
+if [ -z ${VAULT_ADDR} ]; then
+    echo "Did not find VAULT_ADDR in environment"
+    exit 1
+fi
+
 # Initialize vault
 echo "Initializing vault"
-init_output=$(curl --request POST --data "{\"secret_shares\":${VAULT_SECRET_SHARES},\"secret_threshold\":${VAULT_SECRET_THRESHOLD}}" http://127.0.0.1:8200/v1/sys/init)
+init_output=$(curl --request POST --data "{\"secret_shares\":${VAULT_SECRET_SHARES},\"secret_threshold\":${VAULT_SECRET_THRESHOLD}}" ${VAULT_ADDR}/v1/sys/init)
 
 # Get secrets and unseal vault
 echo "Fetching secrets to unseal vault"
@@ -16,11 +24,11 @@ for i in `seq 0 ${SECRET_INDICES}`; do
 
     if [[ $i -lt ${VAULT_SECRET_THRESHOLD} ]]; then
         echo "Unsealing vault with secret $i"
-        curl --request POST --data "{\"key\": \"${secret}\"}" http://127.0.0.1:8200/v1/sys/unseal
+        curl --request POST --data "{\"key\": \"${secret}\"}" ${VAULT_ADDR}/v1/sys/unseal
     fi
 done
 
-sealstatus=$(curl http://127.0.0.1:8200/v1/sys/seal-status)
+sealstatus=$(curl ${VAULT_ADDR}/v1/sys/seal-status)
 initialized=$(echo $sealstatus | jq -r ".initialized")
 sealed=$(echo $sealstatus | jq -r ".sealed")
 echo "Vault initialized status ${initialized} and seal status ${sealed}"
@@ -39,27 +47,33 @@ vault secrets enable -version=2 -path=drio-controller/ddx kv
 echo "Setting configdb password"
 vault kv put drio-controller/ops/postgres password=$(openssl rand -hex 12)
 
+echo "Settings cache password"
+vault kv put drio-controller/ops/cache password=$(openssl rand -hex 12)
+
 echo "Setting controller admin password"
 vault kv put drio-controller/ops/admin password=$(openssl rand -hex 12)
 
+# Add multiple versions of opsuser password. Will be used for testing
 echo "Setting test password"
+vault kv put drio-controller/ops/opsuser password=$(openssl rand -hex 12)
+vault kv put drio-controller/ops/opsuser password=$(openssl rand -hex 12)
 vault kv put drio-controller/ops/opsuser password=$(openssl rand -hex 12)
 
 echo "Attaching policy"
 vault policy write drio-controller-policy ${VAULT_POLICIES}/drio-controller-policy.json
 
 echo "Enabling approle"
-curl --header "X-Vault-Token: ${VAULT_TOKEN}" --request POST --data '{"type": "approle"}' http://127.0.0.1:8200/v1/sys/auth/approle
+curl --header "X-Vault-Token: ${VAULT_TOKEN}" --request POST --data '{"type": "approle"}' ${VAULT_ADDR}/v1/sys/auth/approle
 
 echo "Creating drio-controller-role approle role and attaching drio-controller-policy to it"
-curl --header "X-Vault-Token: ${VAULT_TOKEN}" --request POST --data '{"policies": "drio-controller-policy"}' http://127.0.0.1:8200/v1/auth/approle/role/drio-controller-role
+curl --header "X-Vault-Token: ${VAULT_TOKEN}" --request POST --data '{"policies": "drio-controller-policy"}' ${VAULT_ADDR}/v1/auth/approle/role/drio-controller-role
 
 echo "Extracting approle role id for drio-controller-role"
-approle_id_info=$(curl --header "X-Vault-Token: ${VAULT_TOKEN}" http://127.0.0.1:8200/v1/auth/approle/role/drio-controller-role/role-id)
+approle_id_info=$(curl --header "X-Vault-Token: ${VAULT_TOKEN}" ${VAULT_ADDR}/v1/auth/approle/role/drio-controller-role/role-id)
 approle_id=$(echo ${approle_id_info} | jq -r ".data.role_id")
 
 echo "Extracting approle secret id for drio-controller-role"
-approle_secret_id_info=$(curl --header "X-Vault-Token: ${VAULT_TOKEN}"  --request POST http://127.0.0.1:8200/v1/auth/approle/role/drio-controller-role/secret-id)
+approle_secret_id_info=$(curl --header "X-Vault-Token: ${VAULT_TOKEN}"  --request POST ${VAULT_ADDR}/v1/auth/approle/role/drio-controller-role/secret-id)
 approle_secret_id=$(echo ${approle_secret_id_info} | jq -r ".data.secret_id")
 
 echo "VAULT_ROLE_ID=${approle_id}" >${VAULT_TOKENS}/drio-controller/drio-controller-role.env

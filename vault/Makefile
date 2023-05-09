@@ -1,4 +1,4 @@
-.PHONY: all clean image start-fg start stop stop-clean
+.PHONY: all clean image image-clean start-fg start stop stop-clean
 
 include ../make.vars
 include environment/vault.env
@@ -11,10 +11,10 @@ VAULT_COMPOSE_CMD = $(DOCKER_COMPOSE_CMD) --project-name $(VAULT_PROJECT_NAME) -
 image:
 	$(DOCKER_BUILD_CMD) -f $(DOCKER_DIR)/Dockerfile -t $(VAULT_IMAGE):$(VAULT_VERSION) .
 
-clean:
+image-clean:
 	docker rmi $(VAULT_IMAGE):$(VAULT_VERSION)
 
-all: image
+all: image start
 
 start-fg:
 	$(VAULT_COMPOSE_CMD) up
@@ -31,3 +31,5 @@ stop-clean:
 	rm -rf $(COMPOSE_DIR)/logs/*
 	rm -rf $(COMPOSE_DIR)/tokens/drio-controller/*
 	rm -rf $(COMPOSE_DIR)/tokens/root/*
+
+clean: stop-clean image-clean
