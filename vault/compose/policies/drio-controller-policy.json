@@ -16,11 +16,19 @@
         "capabilities": ["create", "update", "read", "delete", "patch", "list"]
     },
 
+    "drio-controller/user/destroy/*": {
+        "capabilities": ["create", "update", "read", "delete", "patch", "list"]
+    },
+
     "drio-controller/ddx/data/*": {
         "capabilities": ["create", "update", "read", "delete", "patch", "list"]
     },
 
     "drio-controller/ddx/metadata/*": {
+        "capabilities": ["create", "update", "read", "delete", "patch", "list"]
+    },
+
+    "drio-controller/ddx/destroy/*": {
         "capabilities": ["create", "update", "read", "delete", "patch", "list"]
     }
   }
