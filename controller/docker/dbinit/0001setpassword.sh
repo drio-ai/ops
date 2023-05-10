@@ -16,7 +16,7 @@ if [ ! -z ${VAULT_ROLE_ID} ] && [ ! -z ${VAULT_SECRET_ID} ]; then
     fi
 
     echo "Vault login was successful. Fetching DB password from vault..."
-    vault_db_password_resp=$(curl --header "X-Vault-Token: ${vault_client_token}" ${VAULT_ADDR}/v1/drio-controller/ops/data/postgres)
+    vault_db_password_resp=$(curl --header "X-Vault-Token: ${vault_client_token}" ${VAULT_ADDR}/v1/drio-controller/ops/data/configdb)
     vault_db_password=$(echo ${vault_db_password_resp} | jq -r ".data.data.password")
 
     if [ -z ${vault_db_password} ]; then

@@ -71,6 +71,7 @@ services:
     depends_on:
       - configdb
       - redis
+      - redis-init
     links:
       - configdb
       - redis
