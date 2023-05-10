@@ -1,2 +1,2 @@
-vault/data/*
-vault/tokens/*
+vault/compose/data/*
+vault/compose/tokens/*
