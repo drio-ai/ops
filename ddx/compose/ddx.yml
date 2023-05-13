@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  ddx:
+    image: ${DDX_IMAGE}:${DDX_VERSION}
+    container_name: stream-processing-engine
+    volumes:
+      - ./data:/ddx/data
+      - ./logs:/ddx/logs
+    environment:
+      - BOOTSTRAP_SERVERS=${BOOTSTRAP_SERVERS}
+      - SCHEMA_REGISTRY=${SCHEMA_REGISTRY}
