@@ -68,6 +68,9 @@ services:
     networks:
       - ctrl_internal
       - ctrl_vaultnet
+    expose:
+      - 8080
+      - 8443
     depends_on:
       - configdb
       - redis
