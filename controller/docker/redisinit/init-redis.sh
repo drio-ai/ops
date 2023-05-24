@@ -8,9 +8,9 @@ if [ -z ${VAULT_ADDR} ]; then
     exit 1
 fi
 
-if [ ! -z ${VAULT_ROLE_ID} ] && [ ! -z ${VAULT_SECRET_ID} ]; then
+if [ ! -z ${DRIO_VAULT_ROLE_ID} ] && [ ! -z ${DRIO_VAULT_SECRET_ID} ]; then
     echo "Vault login attempt..."
-    vault_client_token_resp=$(curl --request POST --data "{\"role_id\": \"${VAULT_ROLE_ID}\", \"secret_id\": \"${VAULT_SECRET_ID}\"}" ${VAULT_ADDR}/v1/auth/approle/login)
+    vault_client_token_resp=$(curl --request POST --data "{\"role_id\": \"${DRIO_VAULT_ROLE_ID}\", \"secret_id\": \"${DRIO_VAULT_SECRET_ID}\"}" ${VAULT_ADDR}/v1/auth/approle/login)
     vault_client_token=$(echo ${vault_client_token_resp} | jq -r ".auth.client_token")
 
     if [ -z ${vault_client_token} ]; then
