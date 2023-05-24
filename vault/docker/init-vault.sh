@@ -44,14 +44,17 @@ vault secrets enable -version=2 -path=drio-controller/ops kv
 vault secrets enable -version=2 -path=drio-controller/user kv
 vault secrets enable -version=2 -path=drio-controller/ddx kv
 
-echo "Setting configdb password"
+echo "Creating configdb password"
 vault kv put drio-controller/ops/configdb password=$(openssl rand -hex 12)
 
-echo "Settings cache password"
+echo "Creating cache password"
 vault kv put drio-controller/ops/cache password=$(openssl rand -hex 12)
 
-echo "Setting controller admin password"
-vault kv put drio-controller/ops/admin password=$(openssl rand -hex 12)
+echo "Creating controller admin password"
+vault kv put drio-controller/ops/saas-admin@drio.ai password=$(openssl rand -hex 12)
+
+echo "Creating secret key to secure JWT tokens"
+vault kv put drio-controller/ops/saas-jwtkey password=$(openssl rand -hex 32)
 
 # Add multiple versions of opsuser password. Will be used for testing
 echo "Setting test password"
@@ -77,6 +80,6 @@ echo "Extracting approle secret id for drio-controller-role"
 approle_secret_id_info=$(curl --header "X-Vault-Token: ${VAULT_TOKEN}"  --request POST ${VAULT_ADDR}/v1/auth/approle/role/drio-controller-role/secret-id)
 approle_secret_id=$(echo ${approle_secret_id_info} | jq -r ".data.secret_id")
 
-echo "VAULT_ROLE_ID=${approle_id}" >${VAULT_TOKENS}/drio-controller/drio-controller-role.env
-echo "VAULT_SECRET_ID=${approle_secret_id}" >>${VAULT_TOKENS}/drio-controller/drio-controller-role.env
+echo "DRIO_VAULT_ROLE_ID=${approle_id}" >${VAULT_TOKENS}/drio-controller/drio-controller-role.env
+echo "DRIO_VAULT_SECRET_ID=${approle_secret_id}" >>${VAULT_TOKENS}/drio-controller/drio-controller-role.env
 echo "Vault successfully initialized"
