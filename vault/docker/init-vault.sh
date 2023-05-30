@@ -54,7 +54,10 @@ echo "Creating controller admin password"
 vault kv put drio-controller/ops/saas-admin@drio.ai password=$(openssl rand -hex 12)
 
 echo "Creating secret key to secure JWT tokens"
-vault kv put drio-controller/ops/saas-jwtkey password=$(openssl rand -hex 32)
+vault kv put drio-controller/ops/saas-jwtkey key=$(openssl rand -hex 32)
+
+echo "Creating secret key to secure user JWT tokens"
+vault kv put drio-controller/ops/user-jwtkey key=$(openssl rand -hex 32)
 
 # Add multiple versions of opsuser password. Will be used for testing
 echo "Setting test password"
