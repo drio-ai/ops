@@ -11,6 +11,13 @@ create schema accounts;
 \set maxurllen       1024
 \set maxiplen        64
 
+create domain drioname      varchar(:maxnamelen);
+create domain driocountry   varchar(:countrycodelen);
+create domain drioemail     varchar(:maxemaillen);
+create domain driosecret    varchar(:maxsecretlen);
+create domain driourl       varchar(:maxurllen);
+create domain drioip        varchar(:maxiplen);
+
 create or replace function accounts.trigger_update_timestamp() returns trigger as $update_accounts_ts$
     begin
         NEW.updated_at = now();
@@ -20,12 +27,12 @@ $update_accounts_ts$ language plpgsql;
 
 create table if not exists accounts.accounts (
     id               uuid default gen_random_uuid() primary key,
-    name             varchar(:maxnamelen) not null check (length(name) >= 1),
+    name             drioname not null check (length(name) >= 1),
     created_at       timestamptz not null default now(),
     updated_at       timestamptz not null default now(),
-    country          varchar(:countrycodelen) not null check (length(country) = :countrycodelen),
-    state            varchar(:maxnamelen) not null check (length(state) >= 1),
-    city             varchar(:maxnamelen) not null check (length(city) >= 1),
+    country          driocountry not null check (length(country) = :countrycodelen),
+    state            drioname not null check (length(state) >= 1),
+    city             drioname not null check (length(city) >= 1),
     details          jsonb
 );
 
@@ -40,13 +47,13 @@ execute procedure accounts.trigger_update_timestamp();
  */
 create table if not exists accounts.organization_units (
     id               uuid default gen_random_uuid() primary key,
-    name             varchar(:maxnamelen) not null check (length(name) >= 1),
+    name             drioname not null check (length(name) >= 1),
     created_at       timestamptz not null default now(),
     updated_at       timestamptz not null default now(),
     account_id       uuid not null,
-    country          varchar(:countrycodelen) not null check (length(country) = :countrycodelen),
-    state            varchar(:maxnamelen) not null check (length(state) >= 1),
-    city             varchar(:maxnamelen) not null check (length(city) >= 1),
+    country          driocountry not null check (length(country) = :countrycodelen),
+    state            drioname not null check (length(state) >= 1),
+    city             drioname not null check (length(city) >= 1),
     details          jsonb,
     constraint fk_accounts_ou
         foreign key(account_id) references accounts.accounts(id)
@@ -59,14 +66,14 @@ execute procedure accounts.trigger_update_timestamp();
 
 create table if not exists accounts.users (
     id               uuid default gen_random_uuid() primary key,
-    first_name       varchar(:maxnamelen) not null check (length(first_name) >= 1),
-    last_name        varchar(:maxnamelen) not null check (length(last_name) >= 1),
+    first_name       drioname not null check (length(first_name) >= 1),
+    last_name        drioname not null check (length(last_name) >= 1),
     created_at       timestamptz not null default now(),
     updated_at       timestamptz not null default now(),
-    email            varchar(:maxemaillen) not null check (length(email) >= 1),
-    country          varchar(:countrycodelen) not null check (length(country) = :countrycodelen),
-    state            varchar(:maxnamelen) not null check (length(state) >= 1),
-    city             varchar(:maxnamelen) not null check (length(city) >= 1),
+    email            drioemail not null check (length(email) >= 1),
+    country          driocountry not null check (length(country) = :countrycodelen),
+    state            drioname not null check (length(state) >= 1),
+    city             drioname not null check (length(city) >= 1),
     active           boolean not null,
     scope            jsonb,
     details          jsonb
@@ -99,14 +106,14 @@ $update_ddx_ts$ language plpgsql;
 
 create table if not exists ddx.clusters (
     id               uuid default gen_random_uuid() primary key,
-    name             varchar(:maxnamelen) not null check (length(name) >= 1),
+    name             drioname not null check (length(name) >= 1),
     created_at       timestamptz not null default now(),
     updated_at       timestamptz not null default now(),
     account_id       uuid not null,
     ou_id            uuid not null,
-    secret           varchar(:maxsecretlen) not null check (length(secret) >= 32),
+    secret           driosecret not null check (length(secret) >= 32),
     twofa            boolean not null,
-    twofaurl         varchar(:maxurllen),
+    twofaurl         driourl,
     details          jsonb,
     constraint fk_ddx_clusters
         foreign key(account_id) references accounts.accounts(id),
@@ -124,11 +131,11 @@ create type instance_state as enum ('active', 'inactive', 'failed');
 
 create table if not exists ddx.instances (
     id               uuid default gen_random_uuid() primary key,
-    name             varchar(:maxnamelen) not null check (length(name) >= 1),
+    name             drioname not null check (length(name) >= 1),
     created_at       timestamptz not null default now(),
     updated_at       timestamptz not null default now(),
     ddx_cluster_id   uuid not null,
-    ipaddress        varchar(:maxiplen) not null check (length(ipaddress) >= 1),
+    ipaddress        drioip not null check (length(ipaddress) >= 1),
     state            instance_state not null,
     details          jsonb,
     constraint fk_ddx_instances
