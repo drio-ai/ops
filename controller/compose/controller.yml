@@ -36,6 +36,11 @@ services:
       - 6379
     networks:
       - ctrl_internal
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli --user hcheck --pass '' --no-auth-warning PING | grep -w PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis-init:
     image: ${REDIS_IMAGE}:${REDIS_VERSION}
@@ -52,14 +57,15 @@ services:
     expose:
       - 6379
     depends_on:
-      - redis
+      redis:
+        condition: service_healthy
     links:
       - redis
     networks:
       - ctrl_internal
       - ctrl_vaultnet
 
-  apisvc:
+  apiservice:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
     container_name: apiservice
     restart: always
@@ -72,9 +78,39 @@ services:
       - 8080
       - 8443
     depends_on:
+      configdb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      redis-init:
+        condition: service_completed_successfully
+      apiservice-init:
+        condition: service_completed_successfully
+    links:
       - configdb
       - redis
-      - redis-init
+
+  apiservice-init:
+    image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
+    container_name: apiservice-init
+    command:
+      - "--init-only"
+    restart: "no"
+    volumes:
+      - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
+    networks:
+      - ctrl_internal
+      - ctrl_vaultnet
+    expose:
+      - 8080
+      - 8443
+    depends_on:
+      configdb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      redis-init:
+        condition: service_completed_successfully
     links:
       - configdb
       - redis
