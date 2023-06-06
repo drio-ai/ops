@@ -89,6 +89,11 @@ services:
     links:
       - configdb
       - redis
+    healthcheck:
+      test: [ "CMD", "/status.sh" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   apiservice-init:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
