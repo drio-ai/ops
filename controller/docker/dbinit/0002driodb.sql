@@ -71,6 +71,7 @@ create table if not exists accounts.users (
     created_at       timestamptz not null default now(),
     updated_at       timestamptz not null default now(),
     email            drioemail not null check (length(email) >= 1),
+    login_id         drioemail not null check (length(login_id) >= 1),
     country          driocountry not null check (length(country) = :countrycodelen),
     state            drioname not null check (length(state) >= 1),
     city             drioname not null check (length(city) >= 1),

@@ -90,7 +90,7 @@ services:
       - configdb
       - redis
     healthcheck:
-      test: [ "CMD", "/status.sh" ]
+      test: [ "CMD", "/etc/apiservice/bin/status.sh" ]
       interval: 10s
       timeout: 5s
       retries: 5
