@@ -10,11 +10,9 @@ CONTROLLER_COMPOSE_CMD = $(DOCKER_COMPOSE_CMD) --project-name $(CONTROLLER_PROJE
 
 image:
 	$(DOCKER_BUILD_CMD) -f $(DOCKER_DIR)/Dockerfile.configdb -t $(CONFIGDB_IMAGE):$(CONFIGDB_VERSION) .
-	$(DOCKER_BUILD_CMD) -f $(DOCKER_DIR)/Dockerfile.redis -t $(REDIS_IMAGE):$(REDIS_VERSION) .
 
 image-clean:
 	docker rmi $(CONFIGDB_IMAGE):$(CONFIGDB_VERSION)
-	docker rmi $(REDIS_IMAGE):$(REDIS_VERSION)
 
 all: image start
 clean: stop-clean image-clean
