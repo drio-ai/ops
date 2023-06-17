@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  cache:
+    image: ${CACHE_IMAGE}:${CACHE_VERSION}
+    container_name: cache
+    restart: always
+    volumes:
+      - ctrl_cache_data:/var/lib/cache/data
+    expose:
+      - 6379
+    networks:
+      - ctrl_internal
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli --user hcheck --pass '' --no-auth-warning PING | grep -w PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  cache-init:
+    image: ${CACHE_IMAGE}:${CACHE_VERSION}
+    container_name: cache-init
+    restart: "no"
+    volumes:
+      - ctrl_cache_data:/var/lib/cache/data
+    environment:
+      - VAULT_ADDR=http://vault:8200
+      - CACHE_HOST=cache
+    env_file:
+      - ../../vault/compose/tokens/drio-controller/drio-controller-role.env
+    entrypoint: /init-cache.sh
+    expose:
+      - 6379
+    depends_on:
+      cache:
+        condition: service_healthy
+    links:
+      - cache
+    networks:
+      - ctrl_internal
+      - ctrl_vaultnet
+
+volumes:
+  ctrl_cache_data:
+    name: cache_data
+
+networks:
+  ctrl_internal:
+    name: intnet
+  ctrl_vaultnet:
+    name: vaultnet
+    external: true
