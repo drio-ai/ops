@@ -49,7 +49,7 @@ create table if not exists accounts.current (
     state            drioname not null check (length(state) >= 1),
     city             drioname not null check (length(city) >= 1),
     schema_id        bigserial unique,
-    schema_name      drioschema not null unique,
+    schema_name      drioschema not null unique check (schema_name ~* concat('^', 'drio_schema_', '[0-9]+$')),
     details          jsonb
 );
 
@@ -63,7 +63,7 @@ create table if not exists accounts.deleted (
     state            drioname not null check (length(state) >= 1),
     city             drioname not null check (length(city) >= 1),
     schema_id        bigserial unique,
-    schema_name      drioschema not null unique,
+    schema_name      drioschema not null unique check (schema_name ~* concat('^', 'drio_schema_', '[0-9]+$')),
     details          jsonb
 );
 
