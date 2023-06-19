@@ -2,7 +2,7 @@ create database drio;
 
 \connect drio
 
-create schema accounts;
+create schema main;
 
 \set maxnamelen      256
 \set countrycodelen  2
@@ -20,7 +20,7 @@ create domain driourl       varchar(:maxurllen);
 create domain drioip        varchar(:maxiplen);
 create domain drioschema    varchar(:maxschemalen);
 
-create or replace function accounts.trigger_insert_account() returns trigger as $insert_account$
+create or replace function main.trigger_insert_account() returns trigger as $insert_account$
     begin
         if nullif(new.schema_name, '') is null then
             new.schema_name = concat('drio_schema_', new.schema_id::text);
@@ -30,7 +30,7 @@ create or replace function accounts.trigger_insert_account() returns trigger as 
     end;
 $insert_account$ language plpgsql;
 
-create or replace function accounts.trigger_update_account() returns trigger as $update_account$
+create or replace function main.trigger_update_account() returns trigger as $update_account$
     begin
         new.created_at = old.created_at;
         new.schema_name = old.schema_name;
@@ -40,7 +40,7 @@ create or replace function accounts.trigger_update_account() returns trigger as 
     end;
 $update_account$ language plpgsql;
 
-create table if not exists accounts.current (
+create table if not exists main.accounts (
     id               uuid default gen_random_uuid() primary key,
     name             drioname not null unique check (length(name) >= 1),
     created_at       timestamptz not null default now(),
@@ -53,7 +53,17 @@ create table if not exists accounts.current (
     details          jsonb
 );
 
-create table if not exists accounts.deleted (
+create trigger insert_account
+before insert on main.accounts
+for each row
+execute procedure main.trigger_insert_account();
+
+create trigger update_account
+before update on main.accounts
+for each row
+execute procedure main.trigger_update_account();
+
+create table if not exists main.deleted (
     id               uuid default gen_random_uuid() primary key,
     name             drioname not null unique check (length(name) >= 1),
     created_at       timestamptz not null default now(),
@@ -66,13 +76,3 @@ create table if not exists accounts.deleted (
     schema_name      drioschema not null unique check (schema_name ~* concat('^', 'drio_schema_', '[0-9]+$')),
     details          jsonb
 );
-
-create trigger insert_account
-before insert on accounts.current
-for each row
-execute procedure accounts.trigger_insert_account();
-
-create trigger update_account
-before update on accounts.current
-for each row
-execute procedure accounts.trigger_update_account();
