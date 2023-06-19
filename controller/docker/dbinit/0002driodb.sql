@@ -50,7 +50,7 @@ create table if not exists main.accounts (
     updated_at       timestamptz not null default now(),
     deleted_at       timestamptz,
     deleted          boolean,
-    country          driocountry not null check (length(country) = :countrycodelen),
+    country          driocountry not null check (length(country) > 1),
     state            drioname not null check (length(state) >= 1),
     city             drioname not null check (length(city) >= 1),
     schema_id        bigserial unique,
