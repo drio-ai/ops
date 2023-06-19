@@ -10,7 +10,7 @@ create schema main;
 \set maxsecretlen    128
 \set maxurllen       1024
 \set maxiplen        64
-\set maxschemalen    32
+\set maxschemalen    64
 
 create domain drioname      varchar(:maxnamelen);
 create domain driocountry   varchar(:countrycodelen);
