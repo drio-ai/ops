@@ -28,6 +28,7 @@ create or replace function main.trigger_insert_account() returns trigger as $ins
             new.schema_name = concat('drio_account_', new.schema_id::text);
         end if;
 
+        new.deleted = false;
         return new;
     end;
 $insert_account$ language plpgsql;
@@ -47,6 +48,8 @@ create table if not exists main.accounts (
     name             drioname not null unique check (length(name) >= 1),
     created_at       timestamptz not null default now(),
     updated_at       timestamptz not null default now(),
+    deleted_at       timestamptz,
+    deleted          boolean,
     country          driocountry not null check (length(country) = :countrycodelen),
     state            drioname not null check (length(state) >= 1),
     city             drioname not null check (length(city) >= 1),
@@ -64,17 +67,3 @@ create trigger update_account
 before update on main.accounts
 for each row
 execute procedure main.trigger_update_account();
-
-create table if not exists main.deleted (
-    id               uuid default gen_random_uuid() primary key,
-    name             drioname not null unique check (length(name) >= 1),
-    created_at       timestamptz not null default now(),
-    updated_at       timestamptz not null default now(),
-    deleted_at       timestamptz not null default now(),
-    country          driocountry not null check (length(country) = :countrycodelen),
-    state            drioname not null check (length(state) >= 1),
-    city             drioname not null check (length(city) >= 1),
-    schema_id        bigserial unique,
-    schema_name      drioschema not null unique check (schema_name ~* concat('^', 'drio_account_', '[0-9]+$')),
-    details          jsonb
-);
