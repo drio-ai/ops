@@ -20,10 +20,12 @@ create domain driourl       varchar(:maxurllen);
 create domain drioip        varchar(:maxiplen);
 create domain drioschema    varchar(:maxschemalen);
 
+create type ddx_cluster_instance_state as enum ('active', 'inactive', 'failed');
+
 create or replace function main.trigger_insert_account() returns trigger as $insert_account$
     begin
         if nullif(new.schema_name, '') is null then
-            new.schema_name = concat('drio_schema_', new.schema_id::text);
+            new.schema_name = concat('drio_account_', new.schema_id::text);
         end if;
 
         return new;
@@ -49,7 +51,7 @@ create table if not exists main.accounts (
     state            drioname not null check (length(state) >= 1),
     city             drioname not null check (length(city) >= 1),
     schema_id        bigserial unique,
-    schema_name      drioschema not null unique check (schema_name ~* concat('^', 'drio_schema_', '[0-9]+$')),
+    schema_name      drioschema not null unique check (schema_name ~* concat('^', 'drio_account_', '[0-9]+$')),
     details          jsonb
 );
 
@@ -73,6 +75,6 @@ create table if not exists main.deleted (
     state            drioname not null check (length(state) >= 1),
     city             drioname not null check (length(city) >= 1),
     schema_id        bigserial unique,
-    schema_name      drioschema not null unique check (schema_name ~* concat('^', 'drio_schema_', '[0-9]+$')),
+    schema_name      drioschema not null unique check (schema_name ~* concat('^', 'drio_account_', '[0-9]+$')),
     details          jsonb
 );
