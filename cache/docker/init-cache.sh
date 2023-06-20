@@ -28,5 +28,5 @@ if [ ! -z ${DRIO_VAULT_ROLE_ID} ] && [ ! -z ${DRIO_VAULT_SECRET_ID} ]; then
     fi
 
     echo "Updating cache password"
-    redis-cli -h ${REDIS_HOST} config set requirepass ${vault_cache_password}
+    redis-cli -h ${CACHE_HOST} config set requirepass ${vault_cache_password}
 fi

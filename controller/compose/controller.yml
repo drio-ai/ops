@@ -26,45 +26,6 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: ${REDIS_IMAGE}:${REDIS_VERSION}
-    container_name: redis
-    restart: always
-    volumes:
-      - ctrl_redis_data:/var/lib/redis/data
-    expose:
-      - 6379
-    networks:
-      - ctrl_internal
-    healthcheck:
-      test: [ "CMD-SHELL", "redis-cli --user hcheck --pass '' --no-auth-warning PING | grep -w PONG"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  redis-init:
-    image: ${REDIS_IMAGE}:${REDIS_VERSION}
-    container_name: redis-init
-    restart: "no"
-    volumes:
-      - ctrl_redis_data:/var/lib/redis/data
-    environment:
-      - VAULT_ADDR=http://vault:8200
-      - REDIS_HOST=redis
-    env_file:
-      - ../../vault/compose/tokens/drio-controller/drio-controller-role.env
-    entrypoint: /init-redis.sh
-    expose:
-      - 6379
-    depends_on:
-      redis:
-        condition: service_healthy
-    links:
-      - redis
-    networks:
-      - ctrl_internal
-      - ctrl_vaultnet
-
   apiservice:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
     container_name: apiservice
@@ -80,15 +41,10 @@ services:
     depends_on:
       configdb:
         condition: service_healthy
-      redis:
-        condition: service_healthy
-      redis-init:
-        condition: service_completed_successfully
       apiservice-init:
         condition: service_completed_successfully
     links:
       - configdb
-      - redis
     healthcheck:
       test: [ "CMD", "/etc/apiservice/bin/status.sh" ]
       interval: 10s
@@ -112,19 +68,12 @@ services:
     depends_on:
       configdb:
         condition: service_healthy
-      redis:
-        condition: service_healthy
-      redis-init:
-        condition: service_completed_successfully
     links:
       - configdb
-      - redis
 
 volumes:
   ctrl_configdb_data:
     name: configdb_data
-  ctrl_redis_data:
-    name: redis_data
 
 secrets:
   configdb-password:
@@ -135,6 +84,7 @@ networks:
     name: extnet
   ctrl_internal:
     name: intnet
+    external: true
   ctrl_vaultnet:
     name: vaultnet
     external: true
