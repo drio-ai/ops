@@ -29,6 +29,8 @@ services:
   apiservice:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
     container_name: apiservice
+    command:
+      - "--deployment ${APISERVICE_DEPLOYMENT_TYPE}"
     restart: always
     volumes:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
@@ -46,7 +48,7 @@ services:
     links:
       - configdb
     healthcheck:
-      test: [ "CMD", "/etc/apiservice/bin/status.sh" ]
+      test: [ "CMD", "/etc/apiservice/bin/status.sh", "${APISERVICE_DEPLOYMENT_TYPE}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -56,6 +58,7 @@ services:
     container_name: apiservice-init
     command:
       - "--init-only"
+      - "--deployment ${APISERVICE_DEPLOYMENT_TYPE}"
     restart: "no"
     volumes:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
