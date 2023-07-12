@@ -1,8 +1,8 @@
 # How to start controller
-1. Controller components
-2. Controller docker images
-3. Setup
-4. Controller startup
+1. [Controller components](#controller-components)
+2. [Controller docker images](#controller-docker-images)
+3. [Setup](#setup)
+4. [Controller startup](#controller-startup)
 
 # Controller Components
 As of writing this document, these are the components that make up the Drio Controller
@@ -33,5 +33,12 @@ Except apiservice, the other 3 services that make up Drio Controller are built f
 3. Postgres - 15.2
 
 # Setup
-Clone this repository to start the setup process for starting Drio Controller. 
+It is recommended to attempt starting Drio-Controller Ubuntu server. There is nothing specific to this flavour but this is the one that has been tested. Once you have the VM or instance ready, 
 
+1. Install docker. Follow steps [here](https://docs.docker.com/engine/install/ubuntu/) Use the ‘Install using the apt repository’ option
+2. Clone this repository. ```git clone https://github.com/drio-inc/ops.git``` and ```cd ops```
+3. Run ```setup.sh```
+4. ```cd vault``` and run ```make start```
+  1. This will start two docker containers, vault and vault-init
+  2. vault is the long running container. vault-init will perform init actions and exit
+  3. Run ```docker logs vault-init``` to make sure it completed successfully   
