@@ -62,6 +62,6 @@ It is recommended to attempt starting Drio-Controller Ubuntu server. There is no
     1. Run ```docker logs apiservice-init``` to make sure it completed successfully
     1. If all is well, Drio Controller is up and running
 
-Drio Controller can be accessed on port 8080 from the Host it is being run on
+Drio Controller can be accessed at 127.0.0.1:8080 from the Host it is being run on
 
 To stop the controller, go through the directories in reverse order (controller, cache and then vault) and run ```make stop-clean``` in all of them.
