@@ -36,6 +36,8 @@ Except apiservice, the other 3 services that make up Drio Controller are built f
 It is recommended to attempt starting Drio-Controller Ubuntu server. There is nothing specific to this flavour but this is the one that has been tested. Once you have the VM or instance ready, 
 
 1. Install docker. Follow steps [here](https://docs.docker.com/engine/install/ubuntu/) Use the ‘Install using the apt repository’ option
+1. Add your user to docker group if you are not the root user. ```sudo usermod -aG docker $USER```
+1. Install make by running ```sudo apt install make```
 1. Clone this repository. ```git clone https://github.com/drio-inc/ops.git``` and ```cd ops```
 1. Run ```setup.sh```
 1. ```cd vault``` and run ```make start```
