@@ -20,7 +20,7 @@ create domain driourl       varchar(:maxurllen);
 create domain drioip        varchar(:maxiplen);
 create domain drioschema    varchar(:maxschemalen);
 
-create type ddx_cluster_instance_state as enum ('active', 'inactive', 'failed');
+create type ddx_cluster_instance_state as enum ('running', 'stopped', 'upgrading', 'failed');
 
 create or replace function main.trigger_insert_account() returns trigger as $insert_account$
     begin
