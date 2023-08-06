@@ -43,6 +43,15 @@ create or replace function main.trigger_update_account() returns trigger as $upd
     end;
 $update_account$ language plpgsql;
 
+/*
+ * The name field/column in the main.accounts table must be unique. We would like to enforce
+ * that constraint in the table. We cannot do so unfortunately as that will create a problem
+ * when an attempt is made to add an account that was deleted previously. A delete operation
+ * does not result in purging the row immediately. We only mark the deleted flag and set the
+ * deleted_at timestamp. The actual purge will happen at a later point in time. This means the
+ * row will linger around with the account name still there. Enforcing name uniqueness must be
+ * handled by SQL functions that manipulate this table.
+ */
 create table if not exists main.accounts (
     id               uuid default gen_random_uuid() primary key,
     name             drioname not null check (length(name) >= 1),
