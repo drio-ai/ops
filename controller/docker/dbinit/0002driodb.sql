@@ -45,7 +45,7 @@ $update_account$ language plpgsql;
 
 create table if not exists main.accounts (
     id               uuid default gen_random_uuid() primary key,
-    name             drioname not null unique check (length(name) >= 1),
+    name             drioname not null check (length(name) >= 1),
     created_at       timestamptz not null default now(),
     updated_at       timestamptz not null default now(),
     deleted_at       timestamptz,
