@@ -1,0 +1,21 @@
+version: "3.9"
+services:
+  uiserver:
+    image: ${UI_IMAGE}:${UI_VERSION}
+    container_name: uiserver
+    command:
+      - "${APISERVICE_ENDPOINT}"
+    restart: always
+    networks:
+      - ctrl_internal
+    expose:
+      - 3000
+      - 3001
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+
+networks:
+  ctrl_internal:
+    name: intnet
+    external: true
