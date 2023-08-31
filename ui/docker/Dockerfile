@@ -1,4 +1,4 @@
-FROM node:lts AS drioui
+FROM node:lts-bookworm-slim AS drioui
 
 LABEL maintainer="Sudarsan Raghavan <sraghavan@drio.ai>"
 LABEL company="Drio Inc"
