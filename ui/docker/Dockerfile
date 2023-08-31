@@ -6,6 +6,7 @@ LABEL component="Drio Controller UI"
 
 WORKDIR /root
 RUN apt update -y && \
+    apt install git -y && \
     npm install --global concurrently next
     
 COPY docker/uistart.sh /
