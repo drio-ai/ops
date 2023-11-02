@@ -11,6 +11,7 @@ create schema main;
 \set maxurllen       1024
 \set maxiplen        64
 \set maxschemalen    64
+\set maxendpointlen  4096
 
 create domain drioname      varchar(:maxnamelen);
 create domain driocountry   varchar(:countrycodelen);
@@ -19,8 +20,11 @@ create domain driosecret    varchar(:maxsecretlen);
 create domain driourl       varchar(:maxurllen);
 create domain drioip        varchar(:maxiplen);
 create domain drioschema    varchar(:maxschemalen);
+create domain drioendpoint  varchar(:maxendpointlen);
 
 create type drioddxinstancestate as enum ('running', 'stopped', 'upgrading', 'failed');
+
+create type drioddxdatasourcetype as enum ('kafka', 'amazon kinesis', 'azure event hub');
 
 create or replace function main.trigger_insert_account() returns trigger as $insert_account$
     begin
