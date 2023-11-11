@@ -2,6 +2,8 @@ create database drio;
 
 \connect drio
 
+create extension "uuid-ossp";
+
 create schema main;
 
 \set maxnamelen      256
