@@ -20,6 +20,7 @@ RUN apt-get -y install python3-pip
 RUN apt-get -y install python3.11
 RUN mkdir -p /var/log/supervisor
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord.conf /etc/supervisor/supervisord.conf
 
 # Entry point
 RUN mkdir -p /docker-entrypoint-ddx.d
@@ -27,3 +28,4 @@ COPY streaming-engine-0.0.1-SNAPSHOT-jar-with-dependencies.jar /docker-entrypoin
 ADD ddx_agent /docker-entrypoint-ddx.d/ddx_agent
 RUN pip3 install -r /docker-entrypoint-ddx.d/ddx_agent/requirements.txt
 CMD  ["bash", "-c", "supervisord -n -c /etc/supervisor/conf.d/supervisord.conf"]
+
