@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 # Variables
 REGION="us-west-2"
@@ -23,9 +22,22 @@ set_aws_region() {
     aws configure set region ${REGION}
     if [ $? -eq 0 ]; then
         echo "AWS region set to ${REGION}"
+        echo
     else
         echo "Failed to set AWS region"
         exit 1
+    fi
+}
+
+check_public_route_table_exist() {
+    ROUTE_TABLES=$(aws ec2 describe-route-tables --filters "Name=vpc-id,Values=$VPC_ID" --query 'RouteTables[*].{ID:RouteTableId,Name:Tags[?Key==`Name`].Value|[0]}' --output json)
+    ROUTE_TABLE_ID=$(echo "$rt_tables" | jq -r --arg PUBLIC_RT_NAME "$PUBLIC_RT_NAME" '.[] | select(.Name == $PUBLIC_RT_NAME) | .ID')
+    ROUTE_TABLE_NAME=$(echo "$ROUTE_TABLES" | jq -r --arg PUBLIC_RT_NAME "$PUBLIC_RT_NAME" '.[] | select(.Name == $PUBLIC_RT_NAME) | .Name')
+
+    if [[ "$ROUTE_TABLE_NAME" == "$PUBLIC_RT_NAME" ]]; then
+        echo ${ROUTE_TABLE_ID}
+    else
+        echo "None"
     fi
 }
 
@@ -66,19 +78,19 @@ create_subnets() {
     local VPC_ID="$1"
     local PREFIX="$2"
     local SUBNET_COUNT="$3"
-    local SUBNET_TYPE="$4"  # 'private' or 'public'
+    local SUBNET_TYPE="$4" # 'private' or 'public'
     local AZ=('a' 'b' 'c')
 
-    for (( i=1; i<=$SUBNET_COUNT; i++ )); do
+    for ((i = 1; i <= $SUBNET_COUNT; i++)); do
         c=-1
         if [ $PREFIX == $PUBLIC_SUBNET_PREFIX ]; then
             c=2
         fi
-        SUBNET_CIDR="10.0.$((c + i + 1)).0/24"  # Adjust CIDR range as needed
+        SUBNET_CIDR="10.0.$((c + i + 1)).0/24" # Adjust CIDR range as needed
         SUBNET_NAME="${PREFIX}$i"
 
         # Create subnet
-        SUBNET_ID=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block $SUBNET_CIDR --availability-zone ${REGION}${AZ[$((i-1))]} --query 'Subnet.SubnetId' --output text)
+        SUBNET_ID=$(aws ec2 create-subnet --vpc-id $VPC_ID --cidr-block $SUBNET_CIDR --availability-zone ${REGION}${AZ[$((i - 1))]} --query 'Subnet.SubnetId' --output text)
         if [ -n "$SUBNET_ID" ]; then
             aws ec2 create-tags --resources $SUBNET_ID --tags Key=Name,Value=$SUBNET_NAME
             echo "Created $SUBNET_TYPE subnet: $SUBNET_NAME ($SUBNET_ID)"
@@ -117,6 +129,10 @@ check_igw_exists() {
     fi
 
     local IGW_ID=$(aws ec2 describe-internet-gateways --filters "Name=tag:Name,Values=${IGW_NAME}" --query 'InternetGateways[0].InternetGatewayId' --output text)
+    if [ "$IGW_ID" == "None" ]; then
+        echo $IGW_ID
+        return
+    fi
     if [ -n "$IGW_ID" ]; then
         # Check if the Internet Gateway is attached to the VPC
         local ATTACHED_VPC_ID=$(aws ec2 describe-internet-gateways --internet-gateway-ids ${IGW_ID} --query 'InternetGateways[0].Attachments[0].VpcId' --output text)
@@ -189,7 +205,7 @@ allocate_and_tag_elastic_ip() {
 # Function to check if a VPC with the specified name already exists
 check_vpc_exists() {
     VPC_ID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=${VPC_NAME}" --query 'Vpcs[0].VpcId' --output text)
-    
+
     if [ "$VPC_ID" != "None" ]; then
         echo ${VPC_ID}
     else
@@ -200,7 +216,7 @@ check_vpc_exists() {
 # Function to create a VPC with the specified CIDR block and name
 create_vpc() {
     VPC_ID=$(aws ec2 create-vpc --cidr-block ${CIDR_BLOCK} --query 'Vpc.VpcId' --output text)
-    
+
     if [ -z "$VPC_ID" ]; then
         echo "Failed to create VPC."
         exit 1
@@ -269,49 +285,50 @@ set_aws_region
 # Check and create VPC
 VPC_ID=$(check_vpc_exists)
 if [ "$VPC_ID" == "None" ]; then
+    echo "VPC ${VPC_NAME} didn't exists in ${REGION} region, creating..."
     VPC_ID=$(create_vpc)
+    echo "VPC ${VPC_NAME}=${VPC_ID} created successfully"
+else
+    echo "VPC ${VPC_NAME}=${VPC_ID} already exists"
+    echo
 fi
 
 # Check and create Internet Gateway and attach to VPC
 IGW_ID=$(check_igw_exists)
-if [ -z "$IGW_ID" ]; then
+if [ "$IGW_ID" == "None" ]; then
+    echo "Internet Gateway named ${IGW_NAME} does not exists, creating"
     IGW_ID=$(create_igw)
-fi
-
-# Output the Internet Gateway ID found or created
-if [ -n "$IGW_ID" ]; then
-    echo "Internet Gateway ID: ${IGW_ID}"
+    echo "Internet Gateway ${IGW_NAME}=${IGW_ID} created succesfully"
 else
-    echo "Failed to find or create Internet Gateway"
-    exit 1
+    echo "Internet Gateway ${IGW_NAME}=${IGW_ID} already exists"
+    echo
 fi
 
 # Create the public route table if VPC_ID and IGW_ID are not empty
-if [ -n "$VPC_ID" ] && [ -n "$IGW_ID" ]; then
+PUBLIC_RT_ID=$(check_public_route_table_exist)
+if [ -n "$VPC_ID" ] && [ -n "$IGW_ID" ] && [ "$PUBLIC_RT_ID" == "None" ]; then
+    echo "Public route table with name ${PUBLIC_RT_NAME} does not exists, creating"
     PUBLIC_RT_ID=$(create_public_route_table "$VPC_ID" "$IGW_ID")
-fi
-
-# Output the Public Route Table ID created or found
-if [ -n "$PUBLIC_RT_ID" ]; then
-    echo "Public Route Table ID: ${PUBLIC_RT_ID}"
+    echo "Public route table ${PUBLIC_RT_NAME}=${PUBLIC_RT_ID} created successfully"
 else
-    echo "Failed to create or find Public Route Table"
+    echo "Public route table ${PUBLIC_RT_NAME}=${PUBLIC_RT_ID} already exists"
+    echo
 fi
 
 # Ensure VPC has required subnets
 if [ -n "$VPC_ID" ]; then
-    set -x
     ensure_vpc_subnets "$VPC_ID"
-    set +x
 else
     echo "Failed to create or find VPC."
 fi
+
+exit
 
 # Create Elastic IP for NAT Gateway
 EIP_ALLOC_IP=$(allocate_and_tag_elastic_ip)
 echo "Elastic IP allocated with ID $EIP_ALLOC_IP"
 
-# Create NAT gateway 
+# Create NAT gateway
 NAT_GW_ID=$(create_nat_gateway $EIP_ALLOC_IP)
 
 # Create Route Tables for private subnets and associate them

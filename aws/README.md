@@ -10,4 +10,5 @@ To setup Backend environment, we have to create a VPC in any region having 3 Pub
 To setup above environment run following scripts in mentioned order:
 
 1) To create VPC and Subnets:
-./setup_backend_vpc.sh
+
+    ./setup_backend_vpc.sh
