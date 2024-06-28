@@ -30,10 +30,11 @@ To create SSl certificate, which is needed while deploying vault, use following 
 
 Following script to deploy Postgres RDS needs some environment pre-requisites:
 
-    1) VPC with at 2 Subnets in different availability zones. Above "setup_backend_vpc.sh" script creates suitable environment needed to deploy Postgres RDS.
+    i) VPC with 2 Subnets in different availability zones. Above "setup_backend_vpc.sh" script creates suitable environment needed to deploy Postgres RDS.
+    ii) Subnet Groupt with minimum 2 subnets in different availibility zone.
 
 Steps to deploy Postgres RDS:
 
-    1) Modify the script and edit variable value "MASTER_USER_PASSWORD", Please modify other variables as well as per requirement.
+    1) Modify the script and edit variable value "MASTER_USER_PASSWORD", modify other variables as well as per requirement.
 
-    ./create_postgres_rds.sh
+    ./create-postgres-rds.sh
