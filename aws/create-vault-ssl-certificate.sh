@@ -40,8 +40,15 @@ wait_for_stack() {
 get_stack_output() {
     echo "Fetching stack output..."
     OUTPUT=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION --query "Stacks[0].Outputs" --output json)
-    echo "Stack output in JSON format:"
-    echo $OUTPUT
+
+    echo "Stack output:"
+    if command -v jq &> /dev/null; then
+        echo "Pretty printing stack output using jq:"
+        echo $OUTPUT | jq
+    else
+        echo "jq is not installed. Printing stack output in normal format:"
+        echo $OUTPUT
+    fi
 }
 
 # Main script
@@ -49,7 +56,8 @@ check_certificate_exists
 if [ $? -eq 1 ]; then
     create_stack
     wait_for_stack
-    get_stack_output
 else
     echo "No action needed. Certificate already exists."
 fi
+
+get_stack_output
