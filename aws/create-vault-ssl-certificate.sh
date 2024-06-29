@@ -43,10 +43,8 @@ get_stack_output() {
 
     echo "Stack output:"
     if command -v jq &> /dev/null; then
-        echo "Pretty printing stack output using jq:"
         echo $OUTPUT | jq
     else
-        echo "jq is not installed. Printing stack output in normal format:"
         echo $OUTPUT
     fi
 }
