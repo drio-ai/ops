@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation template to create a PostgreSQL RDS instance with required VPC, subnets, and security group.
+
+Parameters:
+  DBInstanceIdentifier:
+    Type: String
+    Default: postgres-db
+  DBInstanceClass:
+    Type: String
+    Default: db.t3.micro
+  Engine:
+    Type: String
+    Default: postgres
+  AllocatedStorage:
+    Type: Number
+    Default: 20
+  DBName:
+    Type: String
+    Default: initialdatabase
+  MasterUsername:
+    Type: String
+    Default: sushil
+  MasterUserPassword:
+    Type: String
+    Default: sushilpostgres@12345
+    NoEcho: true
+  BackupRetentionPeriod:
+    Type: Number
+    Default: 7
+  VpcId:
+    Type: String
+    Description: VPC ID
+  SubnetId1:
+    Type: String
+    Description: Subnet ID 1
+  SubnetId2:
+    Type: String
+    Description: Subnet ID 2
+  SubnetGroupName:
+    Type: String
+    Default: postgres-subnet-group
+  SecurityGroupName:
+    Type: String
+    Default: postgresSG
+
+Resources:
+  RDSDBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: "My DB Subnet Group"
+      SubnetIds:
+        - !Ref SubnetId1
+        - !Ref SubnetId2
+      DBSubnetGroupName: !Ref SubnetGroupName
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Default security group"
+      VpcId: !Ref VpcId
+      GroupName: !Ref SecurityGroupName
+
+  RDSInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: !Ref DBInstanceIdentifier
+      DBInstanceClass: !Ref DBInstanceClass
+      Engine: !Ref Engine
+      AllocatedStorage: !Ref AllocatedStorage
+      DBName: !Ref DBName
+      MasterUsername: !Ref MasterUsername
+      MasterUserPassword: !Ref MasterUserPassword
+      BackupRetentionPeriod: !Ref BackupRetentionPeriod
+      VPCSecurityGroups:
+        - !Ref SecurityGroup
+      DBSubnetGroupName: !Ref RDSDBSubnetGroup
+      PubliclyAccessible: false
+
+Outputs:
+  DBInstanceEndpoint:
+    Description: "The endpoint of the created RDS instance"
+    Value: !GetAtt RDSInstance.Endpoint.Address
+    Export:
+      Name: RDSInstanceEndpoint
