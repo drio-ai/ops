@@ -3,7 +3,7 @@
 REGION=us-west-2
 STACK_NAME=postgres-stack1
 VPC_NAME=BackendStack-VPC
-POSTGRES_PASSWORD=sushilpostgres123
+MASTER_USER_PASSWORD=sushilpostgres123
 PRIVATE_SUBNET1=BackendStack-PrivateSubnet1
 PRIVATE_SUBNET2=BackendStack-PrivateSubnet2
 
@@ -70,7 +70,7 @@ create_stack() {
         --parameters ParameterKey=VpcId,ParameterValue=${VPC_ID} \
         ParameterKey=SubnetId1,ParameterValue=${SUBNET1} \
         ParameterKey=SubnetId2,ParameterValue=${SUBNET2} \
-        ParameterKey=MasterUserPassword,ParameterValue=${POSTGRES_PASSWORD} \
+        ParameterKey=MasterUserPassword,ParameterValue=${MASTER_USER_PASSWORD} \
         --capabilities CAPABILITY_NAMED_IAM --region ${REGION}
 }
 
