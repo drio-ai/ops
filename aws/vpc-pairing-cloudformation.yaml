@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: AWS CloudFormation Template to create a VPC Peering Connection between two VPCs
+
+Parameters:
+  VPC1Id:
+    Type: String
+    Description: The ID of the first VPC (us-west-2)
+  VPC2Id:
+    Type: String
+    Description: The ID of the second VPC (us-east-1)
+  VPC1Region:
+    Type: String
+    Default: us-west-2
+    Description: The region of the first VPC
+  VPC2Region:
+    Type: String
+    Default: us-east-1
+    Description: The region of the second VPC
+  PrivateSubnet1Id:
+    Type: String
+    Description: The ID of the private subnet in the first VPC
+  PrivateSubnet2Id:
+    Type: String
+    Description: The ID of the private subnet in the second VPC
+  VPC1CIDR:
+    Type: String
+    Description: The CIDR block of the first VPC
+  VPC2CIDR:
+    Type: String
+    Description: The CIDR block of the second VPC
+
+Resources:
+  VPCPeeringConnection:
+    Type: AWS::EC2::VPCPeeringConnection
+    Properties:
+      VpcId: !Ref VPC1Id
+      PeerVpcId: !Ref VPC2Id
+      PeerRegion: !Ref VPC2Region
+      Tags:
+        - Key: Name
+          Value: Backend-Controller-VPC-Pairing
+
+Outputs:
+  VPCPeeringConnectionId:
+    Description: VPC Peering Connection ID
+    Value: !Ref VPCPeeringConnection
