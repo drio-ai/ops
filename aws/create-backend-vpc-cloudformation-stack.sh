@@ -19,7 +19,7 @@ check_VPC_exists() {
 # Function to create the CloudFormation stack
 create_stack() {
     echo "Creating CloudFormation stack..."
-    aws cloudformation create-stack --stack-name ${BACKEND_STACK_NAME} --template-body file://${BACKEND_VPC_TEMPLATE_FILE} --capabilities CAPABILITY_NAMED_IAM --region ${BACKEND_REGION}
+    aws cloudformation create-stack --stack-name ${BACKEND_STACK_NAME} --template-body file://${BACKEND_VPC_TEMPLATE_FILE} --parameters ParameterKey=VpcName,ParameterValue=${BACKEND_VPC_NAME} --capabilities CAPABILITY_NAMED_IAM --region ${BACKEND_REGION}
 }
 
 # Function to wait for the stack to complete
@@ -41,10 +41,8 @@ get_stack_output() {
 
     echo "Stack output:"
     if command -v jq &> /dev/null; then
-        echo "Pretty printing stack output using jq:"
         echo $OUTPUT | jq
     else
-        echo "jq is not installed. Printing stack output in normal format:"
         echo $OUTPUT
     fi
 }

@@ -2,6 +2,9 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: CloudFormation template to create a VPC with public and private subnets, an Internet Gateway, a NAT Gateway, and a KeyPair in us-west-2 region.
 
 Parameters:
+  VpcName:
+    Description: Name for the VPC
+    Type: String
   VpcCidr:
     Description: CIDR block for the VPC
     Type: String
@@ -31,7 +34,6 @@ Parameters:
     Type: String
     Default: 10.0.6.0/24
 
-
 Resources:
   VPC:
     Type: 'AWS::EC2::VPC'
@@ -41,14 +43,17 @@ Resources:
       EnableDnsHostnames: true
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-VPC"
+          Value: !Ref VpcName
 
   InternetGateway:
     Type: 'AWS::EC2::InternetGateway'
     Properties:
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-IGW"
+          Value: !Join
+            - ""
+            - - !Ref VpcName
+              - "-IGW"
 
   AttachGateway:
     Type: 'AWS::EC2::VPCGatewayAttachment'
@@ -65,7 +70,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-PublicSubnet1"
+          Value: !Sub "${VpcName}-PublicSubnet1"
 
   PublicSubnet2:
     Type: 'AWS::EC2::Subnet'
@@ -76,7 +81,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-PublicSubnet2"
+          Value: !Sub "${VpcName}-PublicSubnet2"
 
   PublicSubnet3:
     Type: 'AWS::EC2::Subnet'
@@ -87,7 +92,7 @@ Resources:
       MapPublicIpOnLaunch: true
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-PublicSubnet3"
+          Value: !Sub "${VpcName}-PublicSubnet3"
 
   PrivateSubnet1:
     Type: 'AWS::EC2::Subnet'
@@ -97,7 +102,7 @@ Resources:
       AvailabilityZone: !Select [0, !GetAZs us-west-2]
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-PrivateSubnet1"
+          Value: !Sub "${VpcName}-PrivateSubnet1"
 
   PrivateSubnet2:
     Type: 'AWS::EC2::Subnet'
@@ -107,7 +112,7 @@ Resources:
       AvailabilityZone: !Select [1, !GetAZs us-west-2]
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-PrivateSubnet2"
+          Value: !Sub "${VpcName}-PrivateSubnet2"
 
   PrivateSubnet3:
     Type: 'AWS::EC2::Subnet'
@@ -117,7 +122,7 @@ Resources:
       AvailabilityZone: !Select [2, !GetAZs us-west-2]
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-PrivateSubnet3"
+          Value: !Sub "${VpcName}-PrivateSubnet3"
 
   PublicRouteTable:
     Type: 'AWS::EC2::RouteTable'
@@ -125,7 +130,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-PublicRouteTable"
+          Value: !Sub "${VpcName}-PublicRouteTable"
 
   DefaultPublicRoute:
     Type: 'AWS::EC2::Route'
@@ -164,7 +169,7 @@ Resources:
       SubnetId: !Ref PublicSubnet1
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-NatGateway"
+          Value: !Sub "${VpcName}-NatGateway"
 
   PrivateRouteTable1:
     Type: 'AWS::EC2::RouteTable'
@@ -172,7 +177,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-PrivateRouteTable1"
+          Value: !Sub "${VpcName}-PrivateRouteTable1"
 
   PrivateRouteTable2:
     Type: 'AWS::EC2::RouteTable'
@@ -180,7 +185,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-PrivateRouteTable2"
+          Value: !Sub "${VpcName}-PrivateRouteTable2"
 
   PrivateRouteTable3:
     Type: 'AWS::EC2::RouteTable'
@@ -188,7 +193,7 @@ Resources:
       VpcId: !Ref VPC
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-PrivateRouteTable3"
+          Value: !Sub "${VpcName}-PrivateRouteTable3"
 
   PrivateRoute1:
     Type: 'AWS::EC2::Route'
@@ -232,10 +237,10 @@ Resources:
   KeyPair:
     Type: 'AWS::EC2::KeyPair'
     Properties:
-      KeyName: !Sub "${AWS::StackName}-KeyPair"
+      KeyName: !Sub "${VpcName}-KeyPair"
       Tags:
         - Key: Name
-          Value: !Sub "${AWS::StackName}-KeyPair"
+          Value: !Sub "${VpcName}-KeyPair"
 
 Outputs:
   VpcId:

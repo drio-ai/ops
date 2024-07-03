@@ -1,19 +1,16 @@
 #!/bin/bash
 
-# Variables
-REGION="us-west-2" # Change this to your desired region
-DOMAIN="vault.ddx.drio.ai"
-STACK_NAME="SSLCertificateStack"
-TEMPLATE_FILE="ssl-certificate-template.yaml"
+# Setting environment variables using single source file
+source ./aws.env
 
 # Function to check if the domain certificate already exists
 check_certificate_exists() {
-    CERTIFICATE_ARN=$(aws acm list-certificates --region $REGION --query "CertificateSummaryList[?DomainName=='$DOMAIN'].CertificateArn" --output text)
+    CERTIFICATE_ARN=$(aws acm list-certificates --region $BACKEND_REGION --query "CertificateSummaryList[?DomainName=='$VAULT_DOMAIN'].CertificateArn" --output text)
     if [ -z "$CERTIFICATE_ARN" ]; then
-        echo "Certificate for domain $DOMAIN does not exist."
+        echo "Certificate for domain $VAULT_DOMAIN does not exist."
         return 1
     else
-        echo "Certificate for domain $DOMAIN already exists with ARN: $CERTIFICATE_ARN"
+        echo "Certificate for domain $VAULT_DOMAIN already exists with ARN: $CERTIFICATE_ARN"
         return 0
     fi
 }
@@ -21,13 +18,13 @@ check_certificate_exists() {
 # Function to create the CloudFormation stack
 create_stack() {
     echo "Creating CloudFormation stack..."
-    aws cloudformation create-stack --stack-name $STACK_NAME --template-body file://$TEMPLATE_FILE --region $REGION
+    aws cloudformation create-stack --stack-name $SSL_CERTIFICATE_STACK_NAME --template-body file://$SSL_CERTIFICATE_TEMPLATE_FILE --region $BACKEND_REGION
 }
 
 # Function to wait for the stack to complete
 wait_for_stack() {
     echo "Waiting for CloudFormation stack to complete..."
-    aws cloudformation wait stack-create-complete --stack-name $STACK_NAME --region $REGION
+    aws cloudformation wait stack-create-complete --stack-name $SSL_CERTIFICATE_STACK_NAME --region $BACKEND_REGION
     if [ $? -eq 0 ]; then
         echo "Stack creation completed successfully."
     else
@@ -39,7 +36,7 @@ wait_for_stack() {
 # Function to get stack output in JSON format
 get_stack_output() {
     echo "Fetching stack output..."
-    OUTPUT=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --region $REGION --query "Stacks[0].Outputs" --output json)
+    OUTPUT=$(aws cloudformation describe-stacks --stack-name $SSL_CERTIFICATE_STACK_NAME --region $BACKEND_REGION --query "Stacks[0].Outputs" --output json)
 
     echo "Stack output:"
     if command -v jq &> /dev/null; then
