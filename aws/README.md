@@ -31,7 +31,7 @@ Steps to deploy Postgres RDS:
 
 #### NOTE: USE ONLY ONE OF THE FOLLOWING WAYS TO CREATE BACKEND VPC
 
-    1.1) RECOMMENDED WAY: Modify the script and edit variable value "MASTER_USER_PASSWORD", modify other variables as well as per requirement.
+    1.1) RECOMMENDED WAY: Modify the script and edit variable value "POSTGRES_MASTER_USER_PASSWORD", modify other variables as well as per requirement.
 
     ./create-postgres-rds-cloudformation.sh
 
@@ -39,11 +39,11 @@ Steps to deploy Postgres RDS:
 
     ./create-postgres-rds-awscli.sh
 
-## Create VPC Pairing between 2 VPCs in different region:
+## Create VPC Peering between 2 VPCs in different region:
 
 #### NOTE: VPC Names and regions are hardcoded in below scripts, you might need to update the values of variables in script before executing it
 
-#### NOTE: Below script creates VPC pairing between VPCs named ControllerVPC (us-east-1 region) and BackendVPC (us-west-2 region), either change the parameters in create-backend-controller-vpc-pairing.sh script named $CONTROLLER_REGION and $CONTROLLER_VPC_NAME or run following script which creates pre-requisite controller VPC in appropriate region.
+#### NOTE: Below script creates VPC Peering between VPCs named ControllerVPC (us-east-1 region) and BackendVPC (us-west-2 region), either change the parameters in create-backend-controller-vpc-peering.sh script named $CONTROLLER_REGION and $CONTROLLER_VPC_NAME or run following script which creates pre-requisite controller VPC in appropriate region.
 
 #### Steps:
 
@@ -51,4 +51,4 @@ Steps to deploy Postgres RDS:
 
     ./create-controller-vpc-cloudformation.sh
 
-    ./create-backend-controller-vpc-pairing.sh
+    ./create-backend-controller-vpc-peering.sh
