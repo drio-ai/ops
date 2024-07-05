@@ -1,0 +1,15 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  SSLCertificate:
+    Type: "AWS::CertificateManager::Certificate"
+    Properties: 
+      DomainName: "vault.ddx.drio.ai"
+      ValidationMethod: "DNS"
+      DomainValidationOptions:
+        - DomainName: "vault.ddx.drio.ai"
+          ValidationDomain: "drio.ai"
+
+Outputs:
+  CertificateARN:
+    Description: "The ARN of the created SSL certificate"
+    Value: !Ref SSLCertificate
