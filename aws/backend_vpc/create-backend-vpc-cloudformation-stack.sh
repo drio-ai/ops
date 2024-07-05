@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setting environment variables using single source file
-source ./aws.env
+source ../aws.env
 
 # Function to check if VPC with name $BACKEND_VPC_NAME already exists
 check_VPC_exists() {

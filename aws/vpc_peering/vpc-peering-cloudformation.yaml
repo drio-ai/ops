@@ -38,7 +38,7 @@ Resources:
       PeerRegion: !Ref VPC2Region
       Tags:
         - Key: Name
-          Value: Backend-Controller-VPC-Pairing
+          Value: Backend-Controller-VPC-Peering
 
 Outputs:
   VPCPeeringConnectionId:

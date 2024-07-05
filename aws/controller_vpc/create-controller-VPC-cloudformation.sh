@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setting environment variables using single source file
-source ./aws.env
+source ../aws.env
 
 get_stack_output() {
     # Fetch stack outputs
@@ -32,3 +32,13 @@ aws cloudformation create-stack --stack-name $CONTROLLER_STACK_NAME --template-b
 # Wait for stack creation to complete
 echo "Waiting for stack to complete..."
 aws cloudformation wait stack-create-complete --stack-name $CONTROLLER_STACK_NAME --region $CONTROLLER_REGION
+
+echo "Fetching stack output..."
+OUTPUT=$(aws cloudformation describe-stacks --stack-name $CONTROLLER_STACK_NAME --region $CONTROLLER_REGION --query "Stacks[0].Outputs" --output json)
+
+echo "Stack output:"
+if command -v jq &> /dev/null; then
+    echo $OUTPUT | jq
+else
+    echo $OUTPUT
+fi

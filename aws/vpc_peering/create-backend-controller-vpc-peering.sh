@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setting environment variables using single source file
-source ./aws.env
+source ../aws.env
 
 # Fetch VPC IDs
 echo "Fetching VPC ID for ${BACKEND_VPC_NAME} & ${CONTROLLER_VPC_NAME} from regions ${BACKEND_REGION} & ${CONTROLLER_REGION}, respectively"
@@ -19,7 +19,7 @@ echo
 
 # Check if VPC Peering already exists
 echo "Checking if peering connection already exists between above VPCs..."
-PEERING_CONNECTION_ID=$(aws ec2 describe-vpc-peering-connections --region $BACKEND_REGION --filters "Name=tag:Name,Values=Backend-Controller-VPC-Pairing" --query "VpcPeeringConnections[0].VpcPeeringConnectionId" --output text)
+PEERING_CONNECTION_ID=$(aws ec2 describe-vpc-peering-connections --region $BACKEND_REGION --filters "Name=tag:Name,Values=Backend-Controller-VPC-Peering" --query "VpcPeeringConnections[0].VpcPeeringConnectionId" --output text)
 
 if [ "$PEERING_CONNECTION_ID" != "None" ]; then
     PEERING_CONNECTION_STATE=$(aws ec2 describe-vpc-peering-connections --region $BACKEND_REGION --vpc-peering-connection-ids $PEERING_CONNECTION_ID --query 'VpcPeeringConnections[0].Status.Code' --output text)
@@ -58,17 +58,17 @@ echo
 
 # Create CloudFormation stack
 echo "Creating CloudFormation stack..."
-aws cloudformation create-stack --stack-name $VPC_PAIRING_STACK_NAME --template-body file://$VPC_PAIRING_TEMPLATE_FILE --parameters ParameterKey=VPC1Id,ParameterValue=$BACKEND_VPC_ID ParameterKey=VPC2Id,ParameterValue=$CONTROLLER_VPC_ID ParameterKey=VPC1Region,ParameterValue=$BACKEND_REGION ParameterKey=VPC2Region,ParameterValue=$CONTROLLER_REGION ParameterKey=PrivateSubnet1Id,ParameterValue=$BACKEND_PRIVATE_SUBNET_ID ParameterKey=PrivateSubnet2Id,ParameterValue=$CONTROLLER_PRIVATE_SUBNET_ID ParameterKey=VPC1CIDR,ParameterValue=$BACKEND_VPC_CIDR ParameterKey=VPC2CIDR,ParameterValue=$CONTROLLER_VPC_CIDR --region $BACKEND_REGION
+aws cloudformation create-stack --stack-name $VPC_PEERING_STACK_NAME --template-body file://$VPC_PEERING_TEMPLATE_FILE --parameters ParameterKey=VPC1Id,ParameterValue=$BACKEND_VPC_ID ParameterKey=VPC2Id,ParameterValue=$CONTROLLER_VPC_ID ParameterKey=VPC1Region,ParameterValue=$BACKEND_REGION ParameterKey=VPC2Region,ParameterValue=$CONTROLLER_REGION ParameterKey=PrivateSubnet1Id,ParameterValue=$BACKEND_PRIVATE_SUBNET_ID ParameterKey=PrivateSubnet2Id,ParameterValue=$CONTROLLER_PRIVATE_SUBNET_ID ParameterKey=VPC1CIDR,ParameterValue=$BACKEND_VPC_CIDR ParameterKey=VPC2CIDR,ParameterValue=$CONTROLLER_VPC_CIDR --region $BACKEND_REGION
 echo
 
 # Wait for stack creation to complete
 echo "Waiting for stack to complete..."
-aws cloudformation wait stack-create-complete --stack-name $VPC_PAIRING_STACK_NAME --region $BACKEND_REGION
+aws cloudformation wait stack-create-complete --stack-name $VPC_PEERING_STACK_NAME --region $BACKEND_REGION
 echo
 
 # Fetch stack outputs
 echo "Fetching stack outputs..."
-STACK_OUTPUTS=$(aws cloudformation describe-stacks --stack-name $VPC_PAIRING_STACK_NAME --region $BACKEND_REGION --query "Stacks[0].Outputs")
+STACK_OUTPUTS=$(aws cloudformation describe-stacks --stack-name $VPC_PEERING_STACK_NAME --region $BACKEND_REGION --query "Stacks[0].Outputs")
 
 PEERING_CONNECTION_ID=$(echo $STACK_OUTPUTS | jq -r '.[] | select(.OutputKey=="VPCPeeringConnectionId") | .OutputValue')
 echo "PEERING_CONNECTION_ID: $PEERING_CONNECTION_ID"
