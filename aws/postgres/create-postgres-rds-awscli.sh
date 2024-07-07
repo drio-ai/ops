@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setting environment variables using single source file
-source ./aws.env
+source ../aws.env
 
 # Function to fetch subnet identifiers for a given subnet group
 fetch_subnet_identifiers() {
