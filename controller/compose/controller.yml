@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   configdb:
     image: ${CONFIGDB_IMAGE}:${CONFIGDB_VERSION}

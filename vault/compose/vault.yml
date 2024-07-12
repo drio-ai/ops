@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   vault:
     image: ${VAULT_IMAGE}:${VAULT_VERSION}
