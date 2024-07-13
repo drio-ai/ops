@@ -1,7 +1,5 @@
 #!/usr/bin/env sh
 
-exec /__cacert_entrypoint.sh "$@"
-
 if [ -z ${VAULT_ADDR} ]; then
     echo "Did not find VAULT_ADDR in environment"
     exit 1
