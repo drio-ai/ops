@@ -47,6 +47,9 @@ vault secrets enable -version=2 -path=drio-controller/ddx kv
 echo "Creating configdb password"
 vault kv put drio-controller/ops/configdb password=$(openssl rand -hex 12)
 
+echo "Creating pubsub password"
+vault kv put drio-controller/ops/pubsub password=$(openssl rand -hex 12)
+
 echo "Creating cache password"
 vault kv put drio-controller/ops/cache password=$(openssl rand -hex 12)
 
