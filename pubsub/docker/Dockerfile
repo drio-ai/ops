@@ -8,5 +8,6 @@ USER root
 RUN apk add curl jq
 USER appuser
 COPY docker/init-pubsub.sh /
+COPY docker/kafka_server_jaas.conf /etc/kafka/kafka_server_jaas.conf
 ENTRYPOINT [ "/init-pubsub.sh" ]
 CMD [ "/etc/kafka/docker/run" ]
