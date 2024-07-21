@@ -29,7 +29,7 @@ services:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
     container_name: apiservice
     command:
-      - "--deployment ${APISERVICE_DEPLOYMENT_TYPE}"
+      - --deployment=${APISERVICE_DEPLOYMENT_TYPE}
     restart: always
     volumes:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
@@ -59,8 +59,8 @@ services:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
     container_name: apiservice-init
     command:
-      - "--init-only"
-      - "--deployment ${APISERVICE_DEPLOYMENT_TYPE}"
+      - --init-only
+      - --deployment=${APISERVICE_DEPLOYMENT_TYPE}
     restart: "no"
     volumes:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
