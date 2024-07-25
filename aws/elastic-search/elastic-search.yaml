@@ -1,0 +1,547 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Deploy three EC2 instances with custom configuration
+
+Parameters:
+  InstanceType:
+    Description: EC2 instance type
+    Type: String
+    Default: m5ad.large
+    AllowedValues:
+      - m5ad.large
+    ConstraintDescription: must be a valid EC2 instance type.
+  InstanceTypeForESBuilder:
+    Description: EC2 instance type
+    Type: String
+    Default: t2.micro
+    AllowedValues:
+      - t2.micro
+    ConstraintDescription: must be a valid EC2 instance type.
+  VPCID:
+    Description: VPC ID.
+    Type: AWS::EC2::VPC::Id
+  KeyName:
+    Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+    Type: String
+    Default: elastic
+  S3Bucket:
+    Description: S3 bucket containing the SSH key
+    Type: String
+  S3Key:
+    Description: S3 key of the SSH key file
+    Type: String
+  AccessKeyId:
+    Description: AWS Access Key ID
+    Type: String
+  SecretAccessKey:
+    Description: AWS Secret Access Key
+    Type: String
+    NoEcho: true
+  Subnet1Cidr:
+    Description: CIDR block for the first subnet
+    Type: String
+    Default: 172.31.96.0/20
+  Subnet2Cidr:
+    Description: CIDR block for the second subnet
+    Type: String
+    Default: 172.31.112.0/20
+  Subnet3Cidr:
+    Description: CIDR block for the third subnet
+    Type: String
+    Default: 172.31.128.0/20
+
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: VPC Info
+        Parameters:
+          - VPCID
+
+Resources:
+  # Security Group
+  ElasticSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable custom ports and SSH access
+      VpcId: !Ref VPCID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 9200
+          ToPort: 9200
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 9300
+          ToPort: 9300
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 24224
+          ToPort: 24224
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+  # EC2 Instance 1
+  EC2Instance1:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: !Ref InstanceType
+      SubnetId: !Ref "AWS::NoValue"
+      SecurityGroupIds:
+        - !Ref ElasticSecurityGroup
+      KeyName: !Ref KeyName
+      ImageId: ami-04b70fa74e45c3917  # Ubuntu 24.04 LTS
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 25
+            VolumeType: gp3
+      Tags:
+        - Key: Name
+          Value: es01
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            sudo apt update
+            sudo apt install make -y
+            sudo apt install docker.io -y
+            sudo groupadd docker
+            sudo usermod -aG docker ubuntu
+            newgrp docker
+            mkdir -p /home/ubuntu/.docker/cli-plugins/
+            curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o /home/ubuntu/.docker/cli-plugins/docker-compose
+            chmod +x /home/ubuntu/.docker/cli-plugins/docker-compose
+            echo 'vm.max_map_count=262144' >> /etc/sysctl.conf
+            sysctl -p
+            sudo mkfs -t ext4 /dev/nvme1n1; mkdir -p /home/ubuntu/data01; sudo mount /dev/nvme1n1 /home/ubuntu/data01; sudo chmod 777 /home/ubuntu/data01
+
+  # EC2 Instance 2
+  EC2Instance2:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: !Ref InstanceType
+      SubnetId: !Ref "AWS::NoValue"
+      SecurityGroupIds:
+        - !Ref ElasticSecurityGroup
+      KeyName: !Ref KeyName
+      ImageId: ami-04b70fa74e45c3917  # Ubuntu 24.04 LTS
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 25
+            VolumeType: gp3
+      Tags:
+        - Key: Name
+          Value: es02
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            sudo apt update
+            sudo apt install make -y
+            sudo apt install docker.io -y
+            sudo groupadd docker
+            sudo usermod -aG docker ubuntu
+            newgrp docker
+            mkdir -p /home/ubuntu/.docker/cli-plugins/
+            curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o /home/ubuntu/.docker/cli-plugins/docker-compose
+            chmod +x /home/ubuntu/.docker/cli-plugins/docker-compose
+            echo 'vm.max_map_count=262144' >> /etc/sysctl.conf
+            sysctl -p
+            sudo mkfs -t ext4 /dev/nvme1n1; mkdir /home/ubuntu/data01; sudo mount /dev/nvme1n1 /home/ubuntu/data01; sudo chmod 777 /home/ubuntu/data01
+
+  # EC2 Instance 3
+  EC2Instance3:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: !Ref InstanceType
+      SubnetId: !Ref "AWS::NoValue"
+      SecurityGroupIds:
+        - !Ref ElasticSecurityGroup
+      KeyName: !Ref KeyName
+      ImageId: ami-04b70fa74e45c3917  # Ubuntu 24.04 LTS
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 25
+            VolumeType: gp3
+      Tags:
+        - Key: Name
+          Value: es03
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            sudo apt update
+            sudo apt install make -y
+            sudo apt install docker.io -y
+            sudo groupadd docker
+            sudo usermod -aG docker ubuntu
+            newgrp docker
+            mkdir -p /home/ubuntu/.docker/cli-plugins/
+            curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o /home/ubuntu/.docker/cli-plugins/docker-compose
+            chmod +x /home/ubuntu/.docker/cli-plugins/docker-compose
+            echo 'vm.max_map_count=262144' >> /etc/sysctl.conf
+            sysctl -p
+            sudo mkfs -t ext4 /dev/nvme1n1; mkdir /home/ubuntu/data01; sudo mount /dev/nvme1n1 /home/ubuntu/data01; sudo chmod 777 /home/ubuntu/data01
+
+  # EC2 Instance 4 for fluentd 
+  EC2Instance4:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: !Ref InstanceTypeForESBuilder
+      SubnetId: !Ref "AWS::NoValue"
+      SecurityGroupIds:
+        - !Ref ElasticSecurityGroup
+      KeyName: !Ref KeyName
+      ImageId: ami-04b70fa74e45c3917  # Ubuntu 24.04 LTS
+      Tags:
+        - Key: Name
+          Value: fluentd
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            sudo apt update
+            sudo apt install make -y
+            sudo apt install docker.io -y
+            sudo groupadd docker
+            sudo usermod -aG docker ubuntu
+            newgrp docker
+            mkdir -p /home/ubuntu/.docker/cli-plugins/
+            curl -SL https://github.com/docker/compose/releases/download/v2.3.3/docker-compose-linux-x86_64 -o /home/ubuntu/.docker/cli-plugins/docker-compose
+            chmod +x /home/ubuntu/.docker/cli-plugins/docker-compose
+            # Create the Docker Compose file
+            cat <<'EOF' > /home/ubuntu/docker-compose.yml
+            version: "3.9"
+            services:
+              fluentd:
+                build: /home/ubuntu/fluentd
+                volumes:
+                  - /home/ubuntu/fluentd/conf:/fluentd/etc
+                ports:
+                  - "24224:24224"
+                  - "24224:24224/udp"
+                network_mode: host
+            EOF
+
+            # Create the Dockerfile
+            mkdir -p /home/ubuntu/fluentd
+            cat <<'EOF' > /home/ubuntu/fluentd/Dockerfile
+            FROM fluent/fluentd:v1.16-1
+
+            # Use root account to use apk
+            USER root
+
+            # below RUN includes plugin as examples elasticsearch is not required
+            # you may customize including plugins as you wish
+            RUN apk add --no-cache --update --virtual .build-deps \
+                sudo build-base ruby-dev \
+            && sudo gem install fluent-plugin-elasticsearch \
+            && sudo gem sources --clear-all \
+            && apk del .build-deps \
+            && rm -rf /tmp/* /var/tmp/* /usr/lib/ruby/gems/*/cache/*.gem
+            USER fluent
+            EOF
+
+            # Create the Fluentd config file
+            mkdir -p /home/ubuntu/fluentd/conf
+            cat <<'EOF' > /home/ubuntu/fluentd/conf/fluent.conf
+            <source>
+              @type http
+              port 24224
+              bind 0.0.0.0
+            </source>
+
+            <match *.**>
+              @type copy
+
+              <store>
+                @type elasticsearch
+                host ${ESALB.DNSName}
+                port 9200
+                logstash_format true
+                logstash_prefix fluentd
+                logstash_dateformat %Y%m%d
+                include_tag_key true
+                type_name access_log
+                tag_key @log_name
+                flush_interval 1s
+              </store>
+
+              <store>
+                @type stdout
+              </store>
+            </match>
+            EOF
+
+            # Change ownership of the files to ubuntu user
+            sudo chown -R ubuntu:ubuntu /home/ubuntu/docker-compose.yml /home/ubuntu/fluentd
+            # Start Fluentd using Docker Compose
+            sudo -u ubuntu /home/ubuntu/.docker/cli-plugins/docker-compose -f /home/ubuntu/docker-compose.yml up -d
+
+  EC2InstanceForESBuild:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      InstanceType: t2.micro
+      SubnetId: !Ref "AWS::NoValue"
+      SecurityGroupIds:
+        - !Ref ElasticSecurityGroup
+      KeyName: !Ref KeyName
+      ImageId: ami-04b70fa74e45c3917 # Ubuntu 24.04 LTS
+      Tags:
+        - Key: Name
+          Value: es-cluster-builder
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            apt-get update -y > /var/log/user-data.log 2>&1
+            apt-get install -y curl unzip > /var/log/user-data.log 2>&1
+            cd /home/ubuntu
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" > /var/log/user-data.log 2>&1
+            unzip awscliv2.zip > /var/log/user-data.log 2>&1
+            ./aws/install > /var/log/user-data.log 2>&1
+            aws configure set aws_access_key_id ${AccessKeyId}
+            aws configure set aws_secret_access_key ${SecretAccessKey}
+            mkdir -p /home/ubuntu/.ssh >> /var/log/user-data.log 2>&1
+            aws s3 cp s3://${S3Bucket}/${S3Key} /home/ubuntu/.ssh/elastic.pem >> /var/log/user-data.log 2>&1
+            chmod 400 /home/ubuntu/.ssh/elastic.pem >> /var/log/user-data.log 2>&1
+
+            ssh -o StrictHostKeyChecking=no -i /home/ubuntu/.ssh/elastic.pem ubuntu@${EC2Instance1.PrivateIp} <<EOF
+            cat <<EOL > /home/ubuntu/docker-compose.yml
+            version: "3.9"
+            services:
+              es01:
+                image: docker.elastic.co/elasticsearch/elasticsearch:7.17.19
+                container_name: es01
+                environment:
+                  - node.name=${EC2Instance1.PrivateIp}
+                  - cluster.name=es-docker-cluster
+                  - discovery.seed_hosts=${EC2Instance1.PrivateIp},${EC2Instance2.PrivateIp},${EC2Instance3.PrivateIp}
+                  - cluster.initial_master_nodes=${EC2Instance1.PrivateIp},${EC2Instance2.PrivateIp},${EC2Instance3.PrivateIp}
+                  - bootstrap.memory_lock=true
+                  - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+                ulimits:
+                  memlock:
+                    soft: -1
+                    hard: -1
+                volumes:
+                  - /home/ubuntu/data01:/usr/share/elasticsearch/data
+                network_mode: host
+            EOL
+            docker compose -f /home/ubuntu/docker-compose.yml up -d
+            EOF
+
+            ssh -o StrictHostKeyChecking=no -i /home/ubuntu/.ssh/elastic.pem ubuntu@${EC2Instance2.PrivateIp} <<EOF
+            cat <<EOL > /home/ubuntu/docker-compose.yml
+            version: "3.9"
+            services:
+              es02:
+                image: docker.elastic.co/elasticsearch/elasticsearch:7.17.19
+                container_name: es02
+                environment:
+                  - node.name=${EC2Instance2.PrivateIp}
+                  - cluster.name=es-docker-cluster
+                  - discovery.seed_hosts=${EC2Instance1.PrivateIp},${EC2Instance2.PrivateIp},${EC2Instance3.PrivateIp}
+                  - cluster.initial_master_nodes=${EC2Instance1.PrivateIp},${EC2Instance2.PrivateIp},${EC2Instance3.PrivateIp}
+                  - bootstrap.memory_lock=true
+                  - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+                ulimits:
+                  memlock:
+                    soft: -1
+                    hard: -1
+                volumes:
+                  - /home/ubuntu/data01:/usr/share/elasticsearch/data
+                network_mode: host
+            EOL
+            docker compose -f /home/ubuntu/docker-compose.yml up -d
+            EOF
+
+            ssh -o StrictHostKeyChecking=no -i /home/ubuntu/.ssh/elastic.pem ubuntu@${EC2Instance3.PrivateIp} <<EOF
+            cat <<EOL > /home/ubuntu/docker-compose.yml
+            version: "3.9"
+            services:
+              es03:
+                image: docker.elastic.co/elasticsearch/elasticsearch:7.17.19
+                container_name: es03
+                environment:
+                  - node.name=${EC2Instance3.PrivateIp}
+                  - cluster.name=es-docker-cluster
+                  - discovery.seed_hosts=${EC2Instance1.PrivateIp},${EC2Instance2.PrivateIp},${EC2Instance3.PrivateIp}
+                  - cluster.initial_master_nodes=${EC2Instance1.PrivateIp},${EC2Instance2.PrivateIp},${EC2Instance3.PrivateIp}
+                  - bootstrap.memory_lock=true
+                  - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+                ulimits:
+                  memlock:
+                    soft: -1
+                    hard: -1
+                volumes:
+                  - /home/ubuntu/data01:/usr/share/elasticsearch/data
+                network_mode: host
+            EOL
+
+            docker compose -f /home/ubuntu/docker-compose.yml up -d
+            EOF
+            TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600"`
+            INSTANCE_ID=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
+            aws ec2 terminate-instances --instance-ids $INSTANCE_ID
+
+  #Subnets for ALB          
+  SubnetAZ1:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPCID
+      AvailabilityZone: !Select [0, !GetAZs '']
+      CidrBlock: !Ref Subnet1Cidr
+
+  SubnetAZ2:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPCID
+      AvailabilityZone: !Select [1, !GetAZs '']
+      CidrBlock: !Ref Subnet2Cidr
+
+  SubnetAZ3:
+    Type: 'AWS::EC2::Subnet'
+    Properties:
+      VpcId: !Ref VPCID
+      AvailabilityZone: !Select [2, !GetAZs '']
+      CidrBlock: !Ref Subnet3Cidr
+
+  # Application Load Balancer
+  ESALB:
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
+      Name: es-load-balancer
+      Subnets:
+        - !Ref SubnetAZ1
+        - !Ref SubnetAZ2
+        - !Ref SubnetAZ3
+      SecurityGroups:
+        - !Ref ElasticSecurityGroup
+      Scheme: internal
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '60'
+      Type: application
+
+  # Target Group
+  ESTargetGroup:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      HealthCheckIntervalSeconds: 30
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 5
+      Matcher:
+        HttpCode: 200
+      Port: 9200
+      Protocol: HTTP
+      UnhealthyThresholdCount: 2
+      VpcId: !Ref VPCID
+      TargetType: instance
+      Targets:
+        - Id: !Ref EC2Instance1
+        - Id: !Ref EC2Instance2
+        - Id: !Ref EC2Instance3
+
+  # Listener
+  ESListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref ESTargetGroup
+      LoadBalancerArn: !Ref ESALB
+      Port: 9200
+      Protocol: HTTP
+
+  FluentdTargetGroup:
+    Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
+    Properties:
+      Name: FluentdTargetGroup
+      Port: 24224
+      Protocol: HTTP
+      VpcId: !Ref VPCID
+      TargetType: instance
+      HealthCheckProtocol: HTTP
+      HealthCheckPort: 24224
+      HealthCheckIntervalSeconds: 30
+      HealthCheckTimeoutSeconds: 10
+      HealthyThresholdCount: 3
+      UnhealthyThresholdCount: 3
+      Targets:
+        - Id: !Ref EC2Instance4
+
+  # Application Load Balancer (ALB)
+  FluentdALB:
+    Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
+    Properties:
+      Name: FluentdALB
+      Scheme: internet-facing
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '60'
+      Subnets:
+        - !Ref SubnetAZ1  
+        - !Ref SubnetAZ2
+        - !Ref SubnetAZ3
+      SecurityGroups:
+        - !Ref ElasticSecurityGroup
+      Tags:
+        - Key: Name
+          Value: FluentdALB
+      Type: application
+
+  # Listener for ALB
+  FluentdALBListener:
+    Type: 'AWS::ElasticLoadBalancingV2::Listener'
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref FluentdTargetGroup
+      LoadBalancerArn: !Ref FluentdALB
+      Port: 24224
+      Protocol: HTTP
+
+Outputs:
+  SecurityGroupId:
+    Description: The Security Group ID
+    Value: !Ref ElasticSecurityGroup
+  EC2Instance1PrivateIp:
+    Description: Private IP address of the first EC2 instance
+    Value: !GetAtt EC2Instance1.PrivateIp
+  EC2Instance2PrivateIp:
+    Description: Private IP address of the second EC2 instance
+    Value: !GetAtt EC2Instance2.PrivateIp
+  EC2Instance3PrivateIp:
+    Description: Private IP address of the third EC2 instance
+    Value: !GetAtt EC2Instance3.PrivateIp
+  EC2Instance4PrivateIp:
+    Description: Private IP address of the fourth EC2 instance
+    Value: !GetAtt EC2Instance4.PrivateIp
+  EC2Instance1PublicIp:
+    Description: Public IP address of the first EC2 instance
+    Value: !GetAtt EC2Instance1.PublicIp
+  EC2Instance2PublicIp:
+    Description: Public IP address of the second EC2 instance
+    Value: !GetAtt EC2Instance2.PublicIp
+  EC2Instance3PublicIp:
+    Description: Public IP address of the third EC2 instance
+    Value: !GetAtt EC2Instance3.PublicIp
+  EC2Instance4PublicIp:
+    Description: Public IP address of the fourth EC2 instance
+    Value: !GetAtt EC2Instance4.PublicIp
+  EC2Instance1SubnetId:
+    Description: The Subnet ID of first EC2 instance
+    Value: !GetAtt EC2Instance1.SubnetId
+  ESLoadBalancerDNSName:
+    Description: The DNS name of the es load balancer
+    Value: !GetAtt ESALB.DNSName
+  FluentdLoadBalancerDNSName:
+    Description: The DNS name of the fluentd load balancer
+    Value: !GetAtt FluentdALB.DNSName
