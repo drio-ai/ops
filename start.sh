@@ -24,9 +24,9 @@ start_service cache cache-init exited Cache
 start_service pubsub pubsub running PubSub
 start_service controller apiservice-init exited "Configuration Database and API Service"
 
-apiservice_health_status=$(docker inspect -f {{.State.Health.Status}} apiservice)
-until [ ${apiservice_health_status} == "healthy" ]; do
+lb_health_status=$(docker inspect -f {{.State.Health.Status}} loadbalancer)
+until [ ${lb_health_status} == "healthy" ]; do
     sleep 1
-    apiservice_health_status=$(docker inspect -f {{.State.Health.Status}} apiservice)
+    lb_health_status=$(docker inspect -f {{.State.Health.Status}} loadbalancer)
 done
 echo "Controller is ready"

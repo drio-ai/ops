@@ -2,6 +2,10 @@ services:
   configdb:
     image: ${CONFIGDB_IMAGE}:${CONFIGDB_VERSION}
     container_name: postgres
+    command:
+      - -ctcp_keepalives_idle=20
+      - -ctcp_keepalives_interval=3
+      - -ctcp_keepalives_count=3
     restart: always
     user: postgres
     secrets:
@@ -15,7 +19,7 @@ services:
     env_file:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env
     expose:
-      - 5432
+      - ${CONFIGDB_PORT}
     networks:
       - ctrl_internal
       - ctrl_vaultnet
@@ -27,7 +31,7 @@ services:
 
   apiservice:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
-    container_name: apiservice
+    scale: 2
     command:
       - --deployment=${APISERVICE_DEPLOYMENT_TYPE}
     restart: always
@@ -36,12 +40,8 @@ services:
     networks:
       - ctrl_internal
       - ctrl_vaultnet
-    expose:
-      - 8080
-      - 8443
     ports:
-      - "127.0.0.1:8080:8080"
-      - "127.0.0.1:8443:8443"
+      - ${APISERVICE_PORT}
     depends_on:
       configdb:
         condition: service_healthy
@@ -67,14 +67,30 @@ services:
     networks:
       - ctrl_internal
       - ctrl_vaultnet
-    expose:
-      - 8080
-      - 8443
     depends_on:
       configdb:
         condition: service_healthy
     links:
       - configdb
+
+  nginx:
+    image: ${NGINX_IMAGE}:${NGINX_VERSION}
+    container_name: loadbalancer
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - ctrl_internal
+    ports:
+      - ${NGINX_LISTEN_PORT}:${NGINX_LISTEN_PORT}
+    depends_on:
+      apiservice:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost/" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   ctrl_configdb_data:
