@@ -1,3 +1,6 @@
+# This Dockerfile builds for NLP models integration 
+# # Documentation:  https://docs.google.com/document/d/1jGAf3xCF4jsWXagBVy0lci3kLsisWPlCvpKSTKsA_CA/edit?usp=sharing
+
 # =====================================
 #         START OF BASE IMAGE
 # =====================================
