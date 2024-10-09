@@ -1,6 +1,3 @@
-# This Dockerfile builds for NLP models integration 
-# # Documentation:  https://docs.google.com/document/d/1jGAf3xCF4jsWXagBVy0lci3kLsisWPlCvpKSTKsA_CA/edit?usp=sharing
-
 # =====================================
 #         START OF BASE IMAGE
 # =====================================
@@ -116,7 +113,15 @@ ENV PYTHONPATH=/docker-entrypoint-ddx.d/ddx_agent/resources:$PYTHONPATH
 # DOWNLOAD AND EXTRACT CONFIG FILES
 # =====================================
 WORKDIR /docker-entrypoint-ddx.d/ddx_agent/resources
-RUN wget https://spacy-bertopic-config.s3.amazonaws.com/spacy_bertopic_pdfextract_config.tgz -O /docker-entrypoint-ddx.d/ddx_agent/resources/spacy_bertopic_pdfextract_config.tgz && \
+        
+# Define the model_version_id as an ARG
+ARG model_version_id=z96dfH86igNEpV1Um6m26AySTKgm5nhI
+
+# Declare ENV to make the ARG available in RUN commands
+ENV MODEL_VERSION_ID=${model_version_id}
+
+# Use ENV variable in the wget command
+RUN wget "https://spacy-bertopic-config.s3.amazonaws.com/spacy_bertopic_pdfextract_config.tgz?versionId=${MODEL_VERSION_ID}" -O /docker-entrypoint-ddx.d/ddx_agent/resources/spacy_bertopic_pdfextract_config.tgz && \
     tar -zxvf /docker-entrypoint-ddx.d/ddx_agent/resources/spacy_bertopic_pdfextract_config.tgz -C /docker-entrypoint-ddx.d/ddx_agent/resources/ && \
     rm -f /docker-entrypoint-ddx.d/ddx_agent/resources/spacy_bertopic_pdfextract_config.tgz
 
