@@ -2,6 +2,8 @@
 1. [Controller components](#controller-components)
 1. [Controller docker images](#controller-docker-images)
 1. [Controller Start](#controller-start)
+1. [UI Start](#ui-start)
+1. [UI Stop](#ui-stop)
 1. [Controller Stop](#controller-stop)
 
 # Controller Components
@@ -49,6 +51,19 @@ It is recommended to attempt starting Drio-Controller Ubuntu server. There is no
 1. Run ```./vault/scripts/get-saas-admin-pass.sh``` to get the SaaS Admin login password. The SaaS Admin username is *saas-admin@drio.ai*.
 
 Drio Controller can be accessed at 127.0.0.1:8080 from the Host it is being run on
+
+# UI Start
+1. NOTE: UI Server consumes a fair amount of CPU cycles and memory during initialization phase. Start the UI Server only if neccessary.
+1. ```cd ui``` in the ops repository
+1. Run ```make start``` to start uiserver
+1. UI Server will take a little while to complete initialization. You can run ```docker logs --follow uiserver``` to follow progress
+1. Initialization is complete when you see the log line 'Accepting connections at http://localhost:3001' and a similar log for :3000
+1. Point your browser to http://localhost:3000 to access SaaS Admin portal
+1. Point your browser to http://localhost:3001 to access Root Admin portal
+
+# UI Stop
+1. ```cd ui``` in the ops repository
+1. Run ```make stop-clean``` to stop uiserver
 
 # Controller Stop
 1. Run ```./stop.sh``` inside ops directory to stop the controller.
