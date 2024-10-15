@@ -5,6 +5,7 @@
 1. [UI Start](#ui-start)
 1. [UI Stop](#ui-stop)
 1. [Controller Stop](#controller-stop)
+1. [Service Group Directory structure](#service-group-directory-structure)
 
 # Controller Components
 As of writing this document, these are the components that make up the Drio Controller
@@ -68,3 +69,12 @@ Drio Controller can be accessed at 127.0.0.1:8080 from the Host it is being run 
 # Controller Stop
 1. Run ```./stop.sh``` inside ops directory to stop the controller.
 1. If you wish to only stop *Controller service group* components for e.g., ```cd controller``` and run ```make stop-clean```. A ```make start``` in the same directory will start the *Controller service group* components.
+
+# Service Group Directory structure
+All service groups in the ops repository will have these 3 directories in it
+
+1. compose - The docker compose file that is used to start and stop components in the service group
+1. environment - Environment that controls how the components of the service group are started
+1. docker - Dockerfile(s) that is/are used to build images of components in the service group
+
+Along with the directories listed above, there is also a Makefile that defines the commands to start and stop components.
