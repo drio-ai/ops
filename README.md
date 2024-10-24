@@ -44,8 +44,10 @@ It is recommended to attempt starting Drio-Controller Ubuntu server. There is no
 
 1. Install docker. Follow steps [here](https://docs.docker.com/engine/install/ubuntu/) Use the ‘Install using the apt repository’ option
 1. Add your user to docker group if you are not the root user. ```sudo usermod -aG docker $USER```
+1. NOTE: You might have to log out and back in again for the change from the previous step to take effect. ```docker images``` should run successfully.
 1. Install make by running ```sudo apt install make```
 1. Clone this repository. ```git clone https://github.com/drio-ai/ops.git``` and ```cd ops```
+1. NOTE: The scripts you will be running expect **bash** shell to be installed.
 1. Run ```./setup.sh```
 1. Run ```./start.sh```
 1. The start script executed in the previous step will start all components in the right order. Every service group is started using docker compose and that means any docker image not available locally will be downloaded from docker hub.

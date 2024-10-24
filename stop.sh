@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 function stop_service() {
     cwd=$(pwd)

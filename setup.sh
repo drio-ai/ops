@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 cwd=$(pwd)
 prefix=${cwd}/vault/compose
