@@ -5,7 +5,7 @@ include environment/vault.env
 
 VAULT_MANIFEST = $(COMPOSE_DIR)/vault.yml
 VAULT_ENVFILE = $(ENV_DIR)/vault.env
-SAAS_ADMIN_OAUTH_ENVFILE = $(ENV_DIR)/saas-admin-oauth.env
+SAAS_ADMIN_OAUTH_ENVFILE = $(ENV_DIR)/saasadmin-oauth.env
 VAULT_PROJECT_NAME = drio-vault
 VAULT_COMPOSE_CMD = $(DOCKER_COMPOSE_CMD) --project-name $(VAULT_PROJECT_NAME) --env-file $(VAULT_ENVFILE) --env-file $(SAAS_ADMIN_OAUTH_ENVFILE) --file $(VAULT_MANIFEST)
 
