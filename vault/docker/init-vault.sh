@@ -56,6 +56,12 @@ vault kv put drio-controller/ops/cache password=$(openssl rand -hex 12)
 echo "Creating controller admin password"
 vault kv put drio-controller/ops/saas-admin@drio.ai password=$(openssl rand -hex 12)
 
+echo "Creating controller admin oauth secrets"
+vault kv put drio-controller/ops/oauth-client-id key=${SAAS_ADMIN_OAUTH_CLIENT_ID}
+vault kv put drio-controller/ops/oauth-tenant-id key=${SAAS_ADMIN_OAUTH_TENANT_ID}
+vault kv put drio-controller/ops/oauth-client-secret-id key=${SAAS_ADMIN_OAUTH_CLIENT_SECRET_ID}
+vault kv put drio-controller/ops/oauth-client-secret key=${SAAS_ADMIN_OAUTH_CLIENT_SECRET}
+
 echo "Creating secret key to secure JWT tokens"
 vault kv put drio-controller/ops/saas-jwtkey key=$(openssl rand -hex 32)
 
