@@ -16,6 +16,8 @@ services:
       - POSTGRES_DB=example
       - POSTGRES_PASSWORD_FILE=/run/secrets/configdb-password
       - VAULT_ADDR=http://vault:8200
+      - DRIO_DEFAULT_SAAS_ADMINS=${DRIO_DEFAULT_SAAS_ADMINS}
+      - DRIO_SAAS_ADMINS=${DRIO_SAAS_ADMINS:-""}
     env_file:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env
     expose:
