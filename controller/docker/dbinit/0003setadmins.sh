@@ -9,5 +9,7 @@ IFS=','
 for admin in ${DRIO_DEFAULT_SAAS_ADMINS}; do
     # Remove leading and trailing spaces if any
     admin=$(echo ${admin} | xargs)
-    psql --dbname=drio --command "INSERT INTO main.admins(email) VALUES('${admin}');"
+    if [[ ! -z ${admin} ]]; then
+        psql --dbname=drio --command "INSERT INTO main.admins(email) VALUES('${admin}');"
+    fi
 done
