@@ -51,7 +51,9 @@ It is recommended to attempt starting Drio-Controller Ubuntu server. There is no
 1. Run ```./setup.sh```
 1. Run ```./start.sh```
 1. The start script executed in the previous step will start all components in the right order. Every service group is started using docker compose and that means any docker image not available locally will be downloaded from docker hub.
-1. Run ```./vault/scripts/get-saas-admin-pass.sh``` to get the SaaS Admin login password. The SaaS Admin username is *saas-admin@drio.ai*.
+1. Support for OAuth has been added to login as SaaS Administrator. There are a subset of user emails that are allowed to login as SaaS Administrator. Add yourself as a SaaS Administrator by setting the environment variable DRIO_SAAS_ADMINS.
+1. DRIO_SAAS_ADMINS can be set to 1 or more emails. Multiple emails must be comma separated like ```export DRIO_SAAS_ADMINS="user1@drio.ai,user2@drio.ai"```
+1. Run ```./vault/scripts/get-saas-admin-pass.sh``` to get the SaaS Administrator login password. The SaaS Administrator username is *saas-admin@drio.ai*.
 
 Drio Controller can be accessed at 127.0.0.1:8080 from the Host it is being run on
 
@@ -61,8 +63,8 @@ Drio Controller can be accessed at 127.0.0.1:8080 from the Host it is being run 
 1. Run ```make start``` to start uiserver
 1. UI Server will take a little while to complete initialization. You can run ```docker logs --follow uiserver``` to follow progress
 1. Initialization is complete when you see the log line 'Accepting connections at http://localhost:3001' and a similar log for :3000
-1. Point your browser to http://localhost:3000 to access SaaS Admin portal
-1. Point your browser to http://localhost:3001 to access Root Admin portal
+1. Point your browser to http://localhost:3000 to access SaaS Administrator portal
+1. Point your browser to http://localhost:3001 to access Root Administrator portal
 
 # UI Stop
 1. ```cd ui``` in the ops repository
