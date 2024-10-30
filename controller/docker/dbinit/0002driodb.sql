@@ -82,3 +82,44 @@ create trigger update_account
 before update on main.accounts
 for each row
 execute procedure main.trigger_update_account();
+
+create or replace function main.trigger_insert_admin() returns trigger as $insert_admin$
+    begin
+        new.deleted = false;
+        return new;
+    end;
+$insert_admin$ language plpgsql;
+
+create or replace function main.trigger_update_admin() returns trigger as $update_admin$
+    begin
+        new.created_at = old.created_at;
+        new.updated_at = now();
+        return new;
+    end;
+$update_admin$ language plpgsql;
+
+/*
+ * This table will hold the list of email addresses of users who are authorized to be
+ * SaaS controller administrators. SaaS Administrator login supports OAuth and this means
+ * anyone with a company email can login and become a SaaS Administrator. We don't want
+ * this and this table allows us to prune the list. This should be ideally be taken care
+ * of at our IDP (Microsoft Entra) but, that requires a license upgrade which we are not
+ * planning for. This is a stop gap until the license change is in place.
+ */
+create table if not exists main.admins (
+    email            drioemail primary key,
+    created_at       timestamptz not null default now(),
+    updated_at       timestamptz not null default now(),
+    deleted_at       timestamptz,
+    deleted          boolean
+);
+
+create trigger insert_admin
+before insert on main.admins
+for each row
+execute procedure main.trigger_insert_admin();
+
+create trigger update_admin
+before update on main.admins
+for each row
+execute procedure main.trigger_update_admin();
