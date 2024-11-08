@@ -64,7 +64,7 @@ create table if not exists main.accounts (
     id               uuid default gen_random_uuid() primary key,
     name             drioname not null check (length(name) >= 1),
     auth_type        drioaccountauthtype not null default 'local',
-    oauth_client_id  uuid,
+    oauth_client_id  drioname,
     oauth_tenant_id  uuid, /* Only needed for Microsoft Entra ID */
     created_at       timestamptz not null default now(),
     updated_at       timestamptz not null default now(),
