@@ -1,0 +1,67 @@
+{
+    "kafkaMetrics": {
+      "brokerMetrics": {
+        "replication": {
+          "underReplicatedPartitions": "Under Replicated Partitions",
+          "isrShrinksPerSec": "ISR Shrinks Per Sec",
+          "isrExpandsPerSec": "ISR Expands Per Sec"
+        },
+        "controller": {
+          "activeControllerCount": "Active Controller Count",
+          "offlinePartitionsCount": "Offline Partitions Count"
+        },
+        "elections": {
+          "leaderElectionRateAndTimeMs": "Leader Election Rate And Time Ms",
+          "uncleanLeaderElectionsPerSec": "Unclean Leader Elections Per Sec"
+        },
+        "performance": {
+          "totalTimeMs": "Total Time Ms",
+          "purgatorySize": "Purgatory Size",
+          "bytesInPerSec": "Bytes In Per Sec",
+          "bytesOutPerSec": "Bytes Out Per Sec",
+          "requestsPerSecond": "Requests Per Second"
+        },
+        "systemUsage": {
+          "diskUsage": "Disk Usage",
+          "cpuUsage": "CPU Usage",
+          "networkBytesSent": "Network Bytes Sent"
+        },
+        "gc": {
+          "collectionCount": "Collection Count",
+          "collectionTime": "Collection Time"
+        }
+      },
+      "producerMetrics": {
+        "throughput": "Producer Throughput",
+        "latency": {
+          "messageLatency": "Message Latency",
+          "messageLatencyTime": "Message Latency Time"
+        },
+        "retries": "Producer Retries",
+        "lossRate": "Message Loss Rate",
+        "errorRate": "Producer Error Rate",
+        "connection": {
+          "count": "Connection Count",
+          "idleConnections": "Idle Connections",
+          "timeouts": "Connection Timeouts",
+          "poolUtilisation": "Connection Pool Utilisation"
+        }
+      },
+      "consumerMetrics": {
+        "lag": {
+          "recordsLag": "Records Lag",
+          "recordsLagMax": "Records Lag Max"
+        },
+        "rate": {
+          "bytesConsumedRate": "Bytes Consumed Rate",
+          "recordsConsumedRate": "Records Consumed Rate",
+          "fetchRate": "Fetch Rate"
+        },
+        "throughput": "Consumer Throughput",
+        "latency": "Commit Latency",
+        "errorRate": "Error Rate",
+        "rebalanceTime": "Rebalance Time"
+      }
+    }
+  }
+  
