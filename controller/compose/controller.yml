@@ -33,7 +33,7 @@ services:
 
   apiservice:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
-    scale: 2
+    scale: ${APISERVICE_SCALE}
     command:
       - --deployment=${APISERVICE_DEPLOYMENT_TYPE}
     restart: always
