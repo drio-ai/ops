@@ -8,11 +8,11 @@ import re
 from confluent_kafka import Consumer, KafkaError, KafkaException
 from typing import List, Dict, Union
 import fitz  # pymupdf
-from PDFExtractDemo.extract_helper import *  # Assuming the updated extract_helper.py is in this path
+from model_components.PDFExtractDemo.extract_helper import *  # Assuming the updated extract_helper.py is in this path
 from utils.constants import Model
 import pprint
 # ------------------------------------------------------------------------------
-#               Handles Kafka Consumer logic
+#               Kafka-related module: Handles Kafka Consumer logic
 # ------------------------------------------------------------------------------
 
 class KafkaConsumerClient:
