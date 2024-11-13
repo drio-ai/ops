@@ -260,12 +260,9 @@ if __name__ == "__main__":
     print(json.dumps(entity_result, indent=4))
 
     # Example text processing for topic modeling
-    input_text: str = """acme@drio.ai, mobile: 6693225487, SSN: 124-55-8974,
-                         visa : 1458-9989-6287-6582,
-                         Acme Inc,
-                         Address: 54 Clydelle ave San Jose 95124, CA
-                         The order was placed under PO # 12345, and the billing address is 456 Elm St, New York, NY 10001.
-                         The customer phone number is 555-678-9101."""
+    input_text: str = """
+    reference_id inv00000156 header_items INV00000156 5/1/2024 header Invoice ship_to Acme Inc 123 Main Street Springfield, IL 62701 USA Code 54325 items PO # 2024050 Ship Date 5/08/2024 Vendor # 98098 meta_headers Total $309.75 shipping_cost 50 other_charge_amount 10 other_charge_description Handling fee items Line # #1 Buyer's Part # 043678 Vendor Item # 726683 Description Grainger PO # 0789545 
+    """
     filename: str = "sample_document"
     topic_result: str = topic_model_processor.process_text(input_text, filename)
     print(topic_result)
