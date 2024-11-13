@@ -392,7 +392,7 @@ class DDXAgent:
         """
         await asyncio.gather(
             self.run_synchronous_tasks(),
-            self.metrics_collector()
+            #self.metrics_collector()
         )
 
 if __name__ == '__main__':
