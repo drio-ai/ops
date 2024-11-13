@@ -13,5 +13,6 @@
   "verbose": true,
   "zeroshot_min_similarity": 0.7,
   "zeroshot_topic_list": null,
-  "embedding_model": "sentence-transformers/all-mpnet-base-v2"
+  "embedding_model": "sentence-transformers/all-mpnet-base-v2",
+  
 }
