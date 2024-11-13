@@ -12,7 +12,7 @@ from PDFExtractDemo.extract_helper import *  # Assuming the updated extract_help
 from utils.constants import Model
 import pprint
 # ------------------------------------------------------------------------------
-#               Kafka-related module: Handles Kafka Consumer logic
+#               Handles Kafka Consumer logic
 # ------------------------------------------------------------------------------
 
 class KafkaConsumerClient:
