@@ -2,7 +2,7 @@
 
 This Python script defines a class `DDXAgent` that handles various tasks for a DDX (Data Distribution Exchange) system, including anomaly detection, entity extraction, BERTopic processing, and Kafka/JMX metric collection.
 
-## Key Features
+##Key Features
 
 1. **Initialization**:
    - The `DDXAgent` class registers the DDX instance, retrieves configurations from the backend, and logs the initialization process.
