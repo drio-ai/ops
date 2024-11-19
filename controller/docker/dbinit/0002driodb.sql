@@ -28,7 +28,7 @@ create type drioddxinstancestate as enum ('running', 'stopped', 'upgrading', 'fa
 
 create type drioddxdatasourcetype as enum ('kafka', 'amazon kinesis', 'azure event hub');
 
-create type drioaccountauthtype as enum ('local', 'microsoft', 'google');
+create type drioaccountauthprovider as enum ('local', 'microsoft', 'google');
 
 create or replace function main.trigger_insert_account() returns trigger as $insert_account$
     begin
@@ -63,7 +63,7 @@ $update_account$ language plpgsql;
 create table if not exists main.accounts (
     id               uuid default gen_random_uuid() primary key,
     name             drioname not null check (length(name) >= 1),
-    auth_type        drioaccountauthtype not null default 'local',
+    auth_type        drioaccountauthprovider not null default 'local',
     oauth_client_id  drioname,
     oauth_tenant_id  uuid, /* Only needed for Microsoft Entra ID */
     created_at       timestamptz not null default now(),
