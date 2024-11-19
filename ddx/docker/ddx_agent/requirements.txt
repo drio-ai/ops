@@ -4,13 +4,13 @@ charset-normalizer==3.2.0
 confluent-kafka==2.5.0
 contourpy==1.1.1
 cycler==0.12.1
-Cython==0.29.37
+
 et-xmlfile==1.1.0
 expiringdict==1.2.2
 fonttools==4.47.0
 future==0.18.3
-gevent==22.10.2
-greenlet==3.0.0
+
+
 hdbscan==0.8.33
 idna==3.4
 importlib-resources==6.1.1
@@ -20,7 +20,7 @@ kazoo==2.9.0
 kiwisolver==1.4.5
 matplotlib==3.7.4
 netifaces==0.11.0
-numpy==1.26.4
+numpy
 openpyxl==3.1.2
 packaging==23.1
 pandas==2.2.1
@@ -44,6 +44,7 @@ zipp==3.17.0
 zope.event==5.0
 zope.interface==6.0
 jmxquery==0.6.0
+
 spacy==3.7.5
 pymupdf4llm
 bertopic==0.16.2
@@ -64,4 +65,8 @@ pdfplumber==0.11.4
 regex
 pydantic
 pymupdf4llm
-pymupdf @ git+https://github.com/drio-inc/PyMuPDF@main
+gevent>=23.0.0
+greenlet>=3.0.0
+Cython>=0.29.37
+#pymupdf @ git+https://github.com/drio-inc/PyMuPDF@main
+
