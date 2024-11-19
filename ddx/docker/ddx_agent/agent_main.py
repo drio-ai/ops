@@ -29,6 +29,11 @@ from utils.constants import Constants  # Constants used throughout the project
 from utils.file_utils import log_restart_count, generate_ddx_id, load_properties  # File utilities
 from utils.kafka_utils import KafkaConsumerClient  # Kafka utility functions
 
+
+from backends.drio_backend import Drio  # Backend for DDX registration and configuration
+
+
+
 # Model loading and PDF processing
 from model_components.model_config import load_spacy_model, load_bertopic_model  # Model loading
 from model_components.PDFExtractDemo.pdf_processor import start_pdf_extraction_engine  # PDF processing
