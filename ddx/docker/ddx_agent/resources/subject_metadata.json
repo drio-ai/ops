@@ -1,0 +1,20 @@
+{
+  "SalesforceOrders": {
+    "all": [
+      "Product Name",
+      "Ship Quantity",
+      "Price",
+      "Ship to Location",
+      "Dealer Name"
+    ],
+    "categories": [
+      "Product Name",
+      "Ship to Location",
+      "Dealer Name"
+    ],
+    "numerical": [
+      "Ship Quantity",
+      "Price"
+    ]
+  }
+}
