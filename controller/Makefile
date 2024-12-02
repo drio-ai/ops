@@ -23,8 +23,17 @@ start-fg:
 start:
 	$(CONTROLLER_COMPOSE_CMD) up --detach
 
-noapi-start:
+configdb-start:
 	$(CONTROLLER_COMPOSE_CMD) up configdb --detach
+
+configdb-stop:
+	$(CONTROLLER_COMPOSE_CMD) down configdb
+
+api-stop:
+	$(CONTROLLER_COMPOSE_CMD) down apiservice
+
+api-start:
+	$(CONTROLLER_COMPOSE_CMD) up apiservice --detach
 
 stop:
 	$(CONTROLLER_COMPOSE_CMD) down

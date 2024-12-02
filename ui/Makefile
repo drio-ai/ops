@@ -17,9 +17,6 @@ start-fg:
 start:
 	$(UI_COMPOSE_CMD) up --detach
 
-noapi-start:
-	$(UI_COMPOSE_CMD) up configdb --detach
-
 stop:
 	$(UI_COMPOSE_CMD) down
 
