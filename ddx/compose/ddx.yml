@@ -9,3 +9,18 @@ services:
     environment:
       - BOOTSTRAP_SERVERS=${BOOTSTRAP_SERVERS}
       - SCHEMA_REGISTRY=${SCHEMA_REGISTRY}
+    links:
+      - fluentbit
+    logging:
+      driver: "fluentd"
+      options:
+        tag: ddx.log
+
+  fluentbit:
+    image: fluent/fluent-bit:latest
+    volumes:
+      - ./fluentbit/conf:/fluent-bit/etc
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+
