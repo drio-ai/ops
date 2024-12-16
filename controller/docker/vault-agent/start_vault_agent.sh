@@ -31,6 +31,11 @@ auto_auth {
   }
 }
 
+cache {
+  use_auto_auth_token = true
+  cache_static_secrets = true
+}
+
 listener "tcp" {
   address = "0.0.0.0:${VAULT_AGENT_LISTEN_PORT}"
   tls_disable = ${VAULT_AGENT_TLS_DISABLE}
