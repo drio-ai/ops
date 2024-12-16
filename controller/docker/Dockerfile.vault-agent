@@ -1,0 +1,15 @@
+FROM hashicorp/vault:1.13 AS vault-agent
+ARG VAULT_AGENT_LISTEN_PORT
+ARG VAULT_AGENT_TLS_DISABLE
+ARG VAULT_AGENT_VAULT_URL
+
+LABEL maintainer="Rajat Gupta <rajat@geminustech.com>"
+LABEL company="Drio Inc"
+LABEL component="Drio Key-Vault"
+
+COPY docker/vault-agent/gen_config.sh /
+RUN chmod +x /gen_config.sh
+RUN /gen_config.sh ${VAULT_AGENT_LISTEN_PORT} ${VAULT_AGENT_TLS_DISABLE} ${VAULT_AGENT_VAULT_URL}
+COPY docker/vault-agent/init-vault-agent.sh /
+
+ENTRYPOINT ["vault", "agent", "-config=/etc/vault/config.hcl"]
