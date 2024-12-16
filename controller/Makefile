@@ -27,19 +27,18 @@ image-clean: configdb-image-clean vault-agent-image-clean
 all: image start
 clean: stop-clean image-clean
 
-start-fg:
-	touch $(COMPOSE_DIR)/vault-agent/role_id
-	touch $(COMPOSE_DIR)/vault-agent/secret_id
+start-fg: vault-agent-setup
 	$(CONTROLLER_COMPOSE_CMD) up
 
-start:
-	touch $(COMPOSE_DIR)/vault-agent/role_id
-	touch $(COMPOSE_DIR)/vault-agent/secret_id
+start: vault-agent-setup
 	$(CONTROLLER_COMPOSE_CMD) up --detach
 
-vault-agent-start:
+vault-agent-setup:
 	touch $(COMPOSE_DIR)/vault-agent/role_id
 	touch $(COMPOSE_DIR)/vault-agent/secret_id
+	touch $(COMPOSE_DIR)/vault-agent/vault_agent_token
+
+vault-agent-start: vault-agent-setup
 	$(CONTROLLER_COMPOSE_CMD) up vault-agent --detach
 
 vault-agent-stop:

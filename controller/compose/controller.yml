@@ -41,6 +41,7 @@ services:
       - ../../vault/compose/tokens/drio-controller:/etc/vault/tokens:ro
       - ./vault-agent/role_id:/etc/vault/role_id
       - ./vault-agent/secret_id:/etc/vault/secret_id
+      - ./vault-agent/vault_agent_token:/etc/vault/vault_agent_token
     entrypoint: /init-vault-agent.sh
 
   vault-agent:
@@ -52,6 +53,7 @@ services:
     volumes:
       - ./vault-agent/role_id:/etc/vault/role_id:ro
       - ./vault-agent/secret_id:/etc/vault/secret_id:ro
+      - ./vault-agent/vault_agent_token:/etc/vault/vault_agent_token
     expose:
       - ${VAULT_AGENT_LISTEN_PORT}
     depends_on:
@@ -66,6 +68,7 @@ services:
     restart: "no"
     volumes:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
+      - ./vault-agent/vault_agent_token:/etc/vault/vault_agent_token
     networks:
       - ctrl_internal
       - ctrl_vaultnet
@@ -85,6 +88,7 @@ services:
     restart: always
     volumes:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
+      - ./vault-agent/vault_agent_token:/etc/vault/vault_agent_token
     networks:
       - ctrl_internal
       - ctrl_vaultnet

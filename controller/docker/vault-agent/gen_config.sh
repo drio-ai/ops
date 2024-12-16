@@ -19,7 +19,7 @@ auto_auth {
 
   sink "file" {
     config = {
-      path = "/vault-agent-token"
+      path = "/etc/vault/vault-agent-token"
     }
   }
 }
