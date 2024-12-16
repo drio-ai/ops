@@ -31,6 +31,39 @@ services:
       timeout: 5s
       retries: 5
 
+  vault-agent:
+    image: ${VAULT_AGENT_IMAGE}:${VAULT_AGENT_VERSION}
+    container_name: vault-agent
+    networks:
+      - ctrl_internal
+      - ctrl_vaultnet
+    volumes:
+      - ../../vault/compose/tokens/drio-controller:/etc/vault/tokens:ro
+      - ./vault-agent:/etc/vault/agent
+    expose:
+      - ${VAULT_AGENT_LISTEN_PORT}
+
+  apiservice-init:
+    image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
+    container_name: apiservice-init
+    command:
+      - --init-only
+      - --deployment=${APISERVICE_DEPLOYMENT_TYPE}
+    restart: "no"
+    volumes:
+      - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
+      - ./vault-agent:/etc/vault/agent:ro
+    networks:
+      - ctrl_internal
+      - ctrl_vaultnet
+    depends_on:
+      vault-agent:
+        condition: service_started
+      configdb:
+        condition: service_healthy
+    links:
+      - configdb
+
   apiservice:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
     scale: ${APISERVICE_SCALE}
@@ -39,6 +72,7 @@ services:
     restart: always
     volumes:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
+      - ./vault-agent:/etc/vault/agent:ro
     networks:
       - ctrl_internal
       - ctrl_vaultnet
@@ -56,24 +90,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  apiservice-init:
-    image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
-    container_name: apiservice-init
-    command:
-      - --init-only
-      - --deployment=${APISERVICE_DEPLOYMENT_TYPE}
-    restart: "no"
-    volumes:
-      - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
-    networks:
-      - ctrl_internal
-      - ctrl_vaultnet
-    depends_on:
-      configdb:
-        condition: service_healthy
-    links:
-      - configdb
 
   nginx:
     image: ${NGINX_IMAGE}:${NGINX_VERSION}
