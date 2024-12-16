@@ -42,4 +42,4 @@ vault {
 VAULT_AGENT_CONFIG
 
 # Start vault agent
-vault agent -config=${VAULT_AGENT_DIR}/config.hcl
+exec vault agent -config=${VAULT_AGENT_DIR}/config.hcl
