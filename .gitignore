@@ -1,5 +1,4 @@
 vault/compose/data/*
 vault/compose/tokens/*
 vault/environment/saasadmin-oauth.env
-controller/compose/vault-agent/*
 profiler
