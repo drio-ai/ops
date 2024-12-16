@@ -31,19 +31,6 @@ services:
       timeout: 5s
       retries: 5
 
-  vault-agent-init:
-    image: ${VAULT_AGENT_IMAGE}:${VAULT_AGENT_VERSION}
-    container_name: vault-agent-init
-    networks:
-      - ctrl_internal
-      - ctrl_vaultnet
-    volumes:
-      - ../../vault/compose/tokens/drio-controller:/etc/vault/tokens:ro
-      - ./vault-agent/role_id:/etc/vault/role_id
-      - ./vault-agent/secret_id:/etc/vault/secret_id
-      - ./vault-agent/vault_agent_token:/etc/vault/vault_agent_token
-    entrypoint: /init-vault-agent.sh
-
   vault-agent:
     image: ${VAULT_AGENT_IMAGE}:${VAULT_AGENT_VERSION}
     container_name: vault-agent
@@ -51,13 +38,10 @@ services:
       - ctrl_internal
       - ctrl_vaultnet
     volumes:
-      - ./vault-agent/role_id:/etc/vault/role_id:ro
-      - ./vault-agent/secret_id:/etc/vault/secret_id:ro
-      - ./vault-agent/vault_agent_token:/etc/vault/vault_agent_token
+      - ../../vault/compose/tokens/drio-controller:/etc/vault/tokens:ro
+      - ./vault-agent:/etc/vault/agent
     expose:
       - ${VAULT_AGENT_LISTEN_PORT}
-    depends_on:
-      - vault-agent-init
 
   apiservice-init:
     image: ${APISERVICE_IMAGE}:${APISERVICE_VERSION}
@@ -68,7 +52,7 @@ services:
     restart: "no"
     volumes:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
-      - ./vault-agent/vault_agent_token:/etc/vault/vault_agent_token
+      - ./vault-agent:/etc/vault/agent:ro
     networks:
       - ctrl_internal
       - ctrl_vaultnet
@@ -88,7 +72,7 @@ services:
     restart: always
     volumes:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
-      - ./vault-agent/vault_agent_token:/etc/vault/vault_agent_token
+      - ./vault-agent:/etc/vault/agent:ro
     networks:
       - ctrl_internal
       - ctrl_vaultnet

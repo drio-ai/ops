@@ -3,13 +3,14 @@ ARG VAULT_AGENT_LISTEN_PORT
 ARG VAULT_AGENT_TLS_DISABLE
 ARG VAULT_AGENT_VAULT_URL
 
-LABEL maintainer="Rajat Gupta <rajat@geminustech.com>"
+LABEL maintainer="Sudarsan Raghavan <sraghavan@drio.ai>"
 LABEL company="Drio Inc"
-LABEL component="Drio Key-Vault"
+LABEL component="Drio Key-Vault Agent"
 
-COPY docker/vault-agent/gen_config.sh /
-RUN chmod +x /gen_config.sh
-RUN /gen_config.sh ${VAULT_AGENT_LISTEN_PORT} ${VAULT_AGENT_TLS_DISABLE} ${VAULT_AGENT_VAULT_URL}
-COPY docker/vault-agent/init-vault-agent.sh /
+ENV VAULT_AGENT_LISTEN_PORT ${VAULT_AGENT_LISTEN_PORT}
+ENV VAULT_AGENT_TLS_DISABLE ${VAULT_AGENT_TLS_DISABLE}
+ENV VAULT_AGENT_VAULT_URL ${VAULT_AGENT_VAULT_URL}
+COPY docker/vault-agent/start_vault_agent.sh /
+RUN chmod +x /start_vault_agent.sh
 
-ENTRYPOINT ["vault", "agent", "-config=/etc/vault/config.hcl"]
+ENTRYPOINT ["/start_vault_agent.sh"]
