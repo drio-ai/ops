@@ -78,6 +78,10 @@ vault policy write drio-controller-policy ${VAULT_POLICIES}/drio-controller-poli
 echo "Enabling approle"
 curl --header "X-Vault-Token: ${VAULT_TOKEN}" --request POST --data '{"type": "approle"}' ${VAULT_ADDR}/v1/sys/auth/approle
 
+echo "Setting auth approle default TTL ${VAULT_AUTH_DEFAULT_TTL} and max TTL ${VAULT_AUTH_MAX_TTL}"
+vault auth tune -default-lease-ttl=${VAULT_AUTH_DEFAULT_TTL} approle
+vault auth tune -max-lease-ttl=${VAULT_AUTH_MAX_TTL} approle
+
 echo "Creating drio-controller-role approle role and attaching drio-controller-policy to it"
 curl --header "X-Vault-Token: ${VAULT_TOKEN}" --request POST --data '{"policies": "drio-controller-policy"}' ${VAULT_ADDR}/v1/auth/approle/role/drio-controller-role
 
