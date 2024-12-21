@@ -1,4 +1,4 @@
-FROM apache/kafka:3.7.1 AS driopubsub
+FROM apache/kafka:3.7.2 AS driopubsub
 
 LABEL maintainer="Sudarsan Raghavan <sraghavan@drio.ai>"
 LABEL company="Drio Inc"

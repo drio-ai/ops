@@ -1,4 +1,4 @@
-FROM postgres:15.2 AS driodb
+FROM postgres:17.2 AS driodb
 
 LABEL maintainer="Sudarsan Raghavan <sraghavan@drio.ai>"
 LABEL company="Drio Inc"

@@ -1,4 +1,4 @@
-FROM hashicorp/vault:1.13 AS vault-agent
+FROM hashicorp/vault:1.18.3 AS vault-agent
 ARG VAULT_AGENT_LISTEN_PORT
 ARG VAULT_AGENT_TLS_DISABLE
 ARG VAULT_AGENT_VAULT_URL

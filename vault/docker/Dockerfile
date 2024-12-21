@@ -1,4 +1,4 @@
-FROM hashicorp/vault:1.13 AS vault
+FROM hashicorp/vault:1.18.3 AS vault
 
 LABEL maintainer="Sudarsan Raghavan <sraghavan@drio.ai>"
 LABEL company="Drio Inc"
