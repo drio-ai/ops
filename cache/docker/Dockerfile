@@ -1,4 +1,4 @@
-FROM redis:7.0.11 AS drioredis
+FROM redis:7.4.1 AS drioredis
 
 LABEL maintainer="Sudarsan Raghavan <sraghavan@drio.ai>"
 LABEL company="Drio Inc"
