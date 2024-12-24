@@ -53,6 +53,7 @@ services:
     volumes:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
       - ./vault-agent:/etc/vault/agent:ro
+      - ../environment/apiservice:/etc/apiservice/conf:ro
     networks:
       - ctrl_internal
       - ctrl_vaultnet
@@ -73,6 +74,7 @@ services:
     volumes:
       - ../../vault/compose/tokens/drio-controller/drio-controller-role.env:/etc/apiservice/drio-controller-role.env:ro
       - ./vault-agent:/etc/vault/agent:ro
+      - ../environment/apiservice:/etc/apiservice/conf:ro
     networks:
       - ctrl_internal
       - ctrl_vaultnet
